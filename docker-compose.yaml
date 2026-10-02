@@ -7,7 +7,7 @@ services:
     env_file:
       - ./Secrets/.env
     volumes:
-      - pg_data:/var/lib/postrgesql/data
+      - pg_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
