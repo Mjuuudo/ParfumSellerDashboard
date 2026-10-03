@@ -15,7 +15,7 @@ services:
 
   backend:
     build: ./backend
-    container_name: backendContainer
+    container_name: backendContainer 
     ports: 
       - 8000:3000
     env_file:
