@@ -12,6 +12,12 @@ enum OrderStatus{
   DELIVERD
 }
 
+enum ParfumType{
+  COMPLETE,
+  DECANT_10ML,
+  DECANT_20ML
+}
+
 model User {
   id Int @id @default(autoincrement())
   username String @unique
@@ -28,6 +34,7 @@ model User {
   createdOrders Order[] @relation("OrderCreator")
   verifiedOrders Order[] @relation("OrderVerifier")
   cancelledOrders Order[] @relation("OrderCanceller")
+  stockBatches StockBatch[]
 }
 
 model Customer{
@@ -36,19 +43,20 @@ model Customer{
   email String
   phoneNumber String
   address String
-  isActive Boolean
+  isActive Boolean @default(true)
   createdAt DateTime @default(now())
-  updatedAt DateTime?
+  updatedAt DateTime @updatedAt
   order Order[]
 }
 
 model DeliveryCompany{
   id Int @id @default(autoincrement())
   name String
-  deliveryAdress Int
-  isActive Boolean
+
+  isActive Boolean @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime?
+  lastUsedAt DateTime?
 
   order Order[]
 }
@@ -56,24 +64,90 @@ model DeliveryCompany{
 model Order{
   id Int @id @default(autoincrement())
   deliveryAdress String
-  deliveryPrice Int
-  status OrderStatus
+  deliveryPrice Int?
+  status OrderStatus @default(PENDING)
   pendingAt DateTime @default(now())
   verifiedAt DateTime?
   delivredAt DateTime?
   cancelledAt DateTime?
-  updatedAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   createdBy Int
   userCreator User @relation("OrderCreator", fields: [createdBy], references: [id])
+
   verifiedBy Int?
-  userVerifier User @relation("OrderVerifier", fields: [verifiedBy], references: [id])
+  userVerifier User? @relation("OrderVerifier", fields: [verifiedBy], references: [id])
+
   cancelledBy Int?
-  userCanceller User @relation("OrderCanceller", fields: [cancelledBy], references: [id])
- 
+  userCanceller User? @relation("OrderCanceller", fields: [cancelledBy], references: [id])
+
   customerId Int
   customer Customer @relation(fields: [customerId], references: [id])
-  deliveryCompanyId Int
-  deliveryCompany DeliveryCompany @relation(fields: [deliveryCompanyId], references: [id])
+
+  deliveryCompanyId Int?
+  deliveryCompany DeliveryCompany? @relation(fields: [deliveryCompanyId], references: [id])
+
+  orderItems OrderItem[]
 }
 
+model OrderItem{
+  id Int @id @default(autoincrement())
+  sellingType ParfumType
+  quantity Int
+  unitPrice Int
+  totalPrice Int
+
+  orderId Int
+  order Order @relation(fields: [orderId], references: [id])
+
+  parfumId Int
+  parfum Parfum @relation(fields: [parfumId], references: [id])
+
+
+}
+
+model Brand{
+  id Int @id @default(autoincrement())
+  name String @unique
+  image String?
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  parfums Parfum[]
+}
+
+
+model Parfum{
+  id Int @id @default(autoincrement())
+  name String
+
+  brandId Int
+  brand Brand @relation(fields: [brandId], references: [id])
+
+  originalVolume Int
+  completePrice Int 
+  decant10Price Int
+  decant20Price Int
+  isActive Boolean @default(true)
+
+  orderItems OrderItem[]
+  stockBatch StockBatch[]
+  @@unique([brandId, name, originalVolume])
+}
+
+model StockBatch{
+  id Int @id @default(autoincrement())
+
+  parfumId Int
+  parfum Parfum @relation(fields: [parfumId], references: [id])
+
+  quantity Int
+  purchaseCostPerBottle Int
+  receivedAt DateTime @default(now())
+
+  receivedBy Int
+  receivedByUser User @relation(fields: [receivedBy], references: [id])
+
+}
 
