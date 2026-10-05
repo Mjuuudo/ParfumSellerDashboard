@@ -1,21 +1,79 @@
 // use prisma-8
 
-// model User {
-//   id        Int      @id @default(autoincrement())
-//   email     String   @unique
-//   username  String?
-//   name      String?
-//   posts     Post[]
-//   createdAt TimestamptzString @default(now())
-//   updatedAt temporal.updatedAtString()
-// }
+enum RoleEnum{
+  OWNER,
+  EMPLOYEE
+}
 
-// model Post {
-//   id        Int      @id @default(autoincrement())
-//   title     String
-//   content   String?
-//   author    User     @relation(fields: [authorId], references: [id])
-//   authorId  Int
-//   createdAt TimestamptzString @default(now())
-//   updatedAt temporal.updatedAtString()
-// }
+enum OrderStatus{
+  COMFIRMED,
+  PENDING,
+  CANCELLED,
+  DELIVERD
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  username String @unique
+  fistName String
+  lastName String
+  email String @unique
+  phoneNumber String
+  passwordHash String
+  Role  RoleEnum
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  lastLoginAt DateTime?
+  lastUpdate DateTime @updatedAt
+  createdOrders Order[] @relation("OrderCreator")
+  verifiedOrders Order[] @relation("OrderVerifier")
+  cancelledOrders Order[] @relation("OrderCanceller")
+}
+
+model Customer{
+  id Int @id @default(autoincrement())
+  fullName String
+  email String
+  phoneNumber String
+  address String
+  isActive Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime?
+  order Order[]
+}
+
+model DeliveryCompany{
+  id Int @id @default(autoincrement())
+  name String
+  deliveryAdress Int
+  isActive Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime?
+
+  order Order[]
+}
+
+model Order{
+  id Int @id @default(autoincrement())
+  deliveryAdress String
+  deliveryPrice Int
+  status OrderStatus
+  pendingAt DateTime @default(now())
+  verifiedAt DateTime?
+  delivredAt DateTime?
+  cancelledAt DateTime?
+  updatedAt DateTime @default(now())
+  createdBy Int
+  userCreator User @relation("OrderCreator", fields: [createdBy], references: [id])
+  verifiedBy Int?
+  userVerifier User @relation("OrderVerifier", fields: [verifiedBy], references: [id])
+  cancelledBy Int?
+  userCanceller User @relation("OrderCanceller", fields: [cancelledBy], references: [id])
+ 
+  customerId Int
+  customer Customer @relation(fields: [customerId], references: [id])
+  deliveryCompanyId Int
+  deliveryCompany DeliveryCompany @relation(fields: [deliveryCompanyId], references: [id])
+}
+
+
