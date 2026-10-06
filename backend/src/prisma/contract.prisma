@@ -18,6 +18,11 @@ enum ParfumType{
   DECANT_20ML
 }
 
+enum DecantOpperationType{
+  CONSUMPTION,
+  REVERSAL
+}
+
 model User {
   id Int @id @default(autoincrement())
   username String @unique
@@ -35,6 +40,8 @@ model User {
   verifiedOrders Order[] @relation("OrderVerifier")
   cancelledOrders Order[] @relation("OrderCanceller")
   stockBatches StockBatch[]
+  decantBottle DecantBottle[] @relation("BottleReservation")
+  decanteOpperations DecantOpperation[]
 }
 
 model Customer{
@@ -52,10 +59,10 @@ model Customer{
 model DeliveryCompany{
   id Int @id @default(autoincrement())
   name String
-
+  delivreyPrice Int
   isActive Boolean @default(true)
   createdAt DateTime @default(now())
-  updatedAt DateTime?
+  updatedAt DateTime @updatedAt
   lastUsedAt DateTime?
 
   order Order[]
@@ -88,6 +95,7 @@ model Order{
   deliveryCompany DeliveryCompany? @relation(fields: [deliveryCompanyId], references: [id])
 
   orderItems OrderItem[]
+  
 }
 
 model OrderItem{
@@ -133,6 +141,7 @@ model Parfum{
 
   orderItems OrderItem[]
   stockBatch StockBatch[]
+  decantBottles DecantBottle[]
   @@unique([brandId, name, originalVolume])
 }
 
@@ -149,5 +158,54 @@ model StockBatch{
   receivedBy Int
   receivedByUser User @relation(fields: [receivedBy], references: [id])
 
+  decantBottles DecantBottle[]
+
 }
 
+
+model DecantBottle{
+  id Int @id @default(autoincrement())
+
+
+  parfumId Int
+  parfum Parfum @relation(fields:[parfumId], references:[id])
+
+  stockBatchId Int
+  stockBatch StockBatch @relation(fields:[stockBatchId], references:[id])
+
+  initialVolumeMl Int
+  remainingVolumeMl Int
+  reservedAt DateTime?
+
+  reservedById Int?
+  reservedBy User? @relation("BottleReservation", fields: [reservedById], references:[id])
+
+  lastDecantedAt  DateTime?
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  decantOpperation DecantOpperation[]
+}
+
+
+model DecantOpperation{
+  id Int @id @default(autoincrement())
+
+  decantBottleId Int
+  decantBottle DecantBottle @relation(fields: [decantBottleId], references:[id])
+
+  employeeId Int
+  employee User @relation(fields: [employeeId], references: [id])
+
+  quantityMl Int
+
+  orderId Int
+  order Order @relation(fields:[orderId], references:[id])
+
+  oppType DecantOpperationType @default(CONSUMPTION)
+  reversedOperationId Int?
+  reversedOpperation DecantOpperation? @relation("OperationReversal", fields: [reversedOperationId], references: [id])
+  reversedByOpperation DecantOpperation? @relation("OperationReversal")
+
+  performedAt DateTime @default(now())
+}
