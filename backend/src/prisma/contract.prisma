@@ -111,7 +111,20 @@ model OrderItem{
   parfumId Int
   parfum Parfum @relation(fields: [parfumId], references: [id])
 
+  orderItemsConsumptions OrderitemConsumption[]
+}
 
+model OrderitemConsumption{
+  id Int @id @default(autoincrement())
+  
+  orderItemId Int
+  orderItem OrderItem @relation(fields: [orderItemId], references: [id])
+
+  decantBottleId Int
+  decantBottle DecantBottle @relation(fields:[decantBottleId], references:[id])
+
+  quantityMl Int
+  consumedAt DateTime @default(now())
 }
 
 model Brand{
@@ -184,7 +197,9 @@ model DecantBottle{
   isActive Boolean @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
   decantOpperation DecantOpperation[]
+  orderItemConsumption OrderitemConsumption[]
 }
 
 
@@ -208,4 +223,14 @@ model DecantOpperation{
   reversedByOpperation DecantOpperation? @relation("OperationReversal")
 
   performedAt DateTime @default(now())
+}
+
+model PriceHistory{
+  id Int @id @default(autoincrement())
+
+
+  parfumId Int
+  parfum Parfum @relation(fields: [parfumId], references: [id])
+
+
 }
