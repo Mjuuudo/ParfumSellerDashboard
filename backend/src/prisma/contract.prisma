@@ -95,6 +95,7 @@ model Order{
   deliveryCompany DeliveryCompany? @relation(fields: [deliveryCompanyId], references: [id])
 
   orderItems OrderItem[]
+  decantOpperations DecantOpperation[]
   
 }
 
@@ -225,12 +226,12 @@ model DecantOpperation{
   performedAt DateTime @default(now())
 }
 
-model PriceHistory{
-  id Int @id @default(autoincrement())
+// model PriceHistory{
+//   id Int @id @default(autoincrement())
 
 
-  parfumId Int
-  parfum Parfum @relation(fields: [parfumId], references: [id])
+//   parfumId Int
+//   parfum Parfum @relation(fields: [parfumId], references: [id])
 
 
-}
+// }
