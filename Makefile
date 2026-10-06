@@ -8,7 +8,9 @@ rebuild:
 	docker compose down -v && docker compose up --build
 ps:
 	docker ps -a
-backend:
-	docker compose up backend database
+database:
+	docker compose up database
+application:
+	docker compose up backend 
 frontend:
 	docker compose up frontend

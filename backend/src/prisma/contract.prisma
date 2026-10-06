@@ -1,25 +1,25 @@
 // use prisma-8
 
-enum RoleEnum{
-  OWNER,
+enum RoleEnum {
+  OWNER
   EMPLOYEE
 }
 
-enum OrderStatus{
-  COMFIRMED,
-  PENDING,
-  CANCELLED,
+enum OrderStatus {
+  COMFIRMED
+  PENDING
+  CANCELLED
   DELIVERD
 }
 
-enum ParfumType{
-  COMPLETE,
-  DECANT_10ML,
+enum ParfumType {
+  COMPLETE
+  DECANT_10ML
   DECANT_20ML
 }
 
-enum DecantOpperationType{
-  CONSUMPTION,
+enum DecantOpperationType {
+  CONSUMPTION
   REVERSAL
 }
 
@@ -35,7 +35,7 @@ model User {
   isActive Boolean @default(true)
   createdAt DateTime @default(now())
   lastLoginAt DateTime?
-  lastUpdate DateTime @updatedAt
+  lastUpdate temporal.updatedAt()
   createdOrders Order[] @relation("OrderCreator")
   verifiedOrders Order[] @relation("OrderVerifier")
   cancelledOrders Order[] @relation("OrderCanceller")
@@ -52,7 +52,7 @@ model Customer{
   address String
   isActive Boolean @default(true)
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt temporal.updatedAt()
   order Order[]
 }
 
@@ -62,7 +62,7 @@ model DeliveryCompany{
   delivreyPrice Int
   isActive Boolean @default(true)
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt temporal.updatedAt()
   lastUsedAt DateTime?
 
   order Order[]
@@ -77,7 +77,7 @@ model Order{
   verifiedAt DateTime?
   delivredAt DateTime?
   cancelledAt DateTime?
-  updatedAt DateTime @updatedAt
+  updatedAt temporal.updatedAt()
 
   createdBy Int
   userCreator User @relation("OrderCreator", fields: [createdBy], references: [id])
@@ -134,7 +134,7 @@ model Brand{
   image String?
   isActive Boolean @default(true)
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt temporal.updatedAt()
 
   parfums Parfum[]
 }
@@ -197,7 +197,7 @@ model DecantBottle{
   lastDecantedAt  DateTime?
   isActive Boolean @default(true)
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt temporal.updatedAt()
 
   decantOpperation DecantOpperation[]
   orderItemConsumption OrderitemConsumption[]
@@ -219,7 +219,7 @@ model DecantOpperation{
   order Order @relation(fields:[orderId], references:[id])
 
   oppType DecantOpperationType @default(CONSUMPTION)
-  reversedOperationId Int?
+  reversedOperationId Int? @unique
   reversedOpperation DecantOpperation? @relation("OperationReversal", fields: [reversedOperationId], references: [id])
   reversedByOpperation DecantOpperation? @relation("OperationReversal")
 
