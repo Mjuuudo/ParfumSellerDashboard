@@ -1586,7 +1586,7 @@
                   "kind": "scalar"
                 }
               },
-              "fistName": {
+              "firstName": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
@@ -1753,8 +1753,8 @@
                 "email": {
                   "column": "email"
                 },
-                "fistName": {
-                  "column": "fistName"
+                "firstName": {
+                  "column": "firstName"
                 },
                 "id": {
                   "column": "id"
@@ -2969,7 +2969,7 @@
                   "nativeType": "text",
                   "nullable": false
                 },
-                "fistName": {
+                "firstName": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
@@ -3082,7 +3082,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "0092b958039c26fde284b915333f9eda922487e8b938de23c51557f1124f2af5"
+    "storageHash": "44d6762a650c035679787d64ff2c20dac1d007d55e16b6814a12c122dafcdf11"
   },
   "execution": {
     "executionHash": "7cfd33a50961b5cc96407c6d6170117f9eddd327b45504a4d979ced8125b67aa",

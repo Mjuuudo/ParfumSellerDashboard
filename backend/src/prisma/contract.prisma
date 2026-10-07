@@ -26,7 +26,7 @@ enum DecantOpperationType {
 model User {
   id Int @id @default(autoincrement())
   username String @unique
-  fistName String
+  firstName String
   lastName String
   email String @unique
   phoneNumber String
