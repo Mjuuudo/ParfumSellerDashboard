@@ -3,26 +3,43 @@ import {
   Catch,
 } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
-import { isStructuredError } from '@prisma/orm-postgres/utils/structured-error';
+import { Logger } from '@nestjs/common';
 
 
+
+function isPrismaError ( exception: unknown ): boolean {
+
+    if (!exception || typeof exception !== 'object') {
+        return false;
+    }
+
+    const error = exception as any;
+
+    if (error.kind === 'sql_query' && error.sqlState === '23505') {
+        Logger.error('PrismaExceptionFilter caught a Prisma error:', error.message);
+        return true;
+    }
+    return false;
+
+
+}
 @Catch()
 export class PrismaExceptionFilter extends BaseExceptionFilter {
 
 
     catch ( exception: unknown, host: ArgumentsHost ) {
-          if (isStructuredError(exception)) {
-
-        if (String(exception.code) === '23505') {
+        
+        if (isPrismaError(exception)) {
             const response = host.switchToHttp().getResponse();
-
-            return response.status(409).json({
+            response.status(409).json({
                 statusCode: 409,
-                message: 'Username or email already exists',
+                message: 'username or email already exists',
+                error: 'Bad Request',
             });
-        }
-    }
+            return;
 
+        }
+    
         super.catch(exception, host);
     }
 }
