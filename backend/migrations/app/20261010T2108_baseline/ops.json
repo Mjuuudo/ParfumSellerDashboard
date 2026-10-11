@@ -1,0 +1,2158 @@
+[
+  {
+    "id": "schema.public",
+    "label": "Create schema \"public\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "Create schema \"public\"",
+        "sql": "CREATE SCHEMA IF NOT EXISTS \"public\"",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "table.Brand",
+    "label": "Create table \"Brand\"",
+    "summary": "Creates table \"Brand\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Brand"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Brand\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Brand\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Brand\"",
+        "sql": "CREATE TABLE \"public\".\"Brand\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"image\" text,\n  \"isActive\" bool DEFAULT true NOT NULL,\n  \"name\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Brand\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Brand\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.Customer",
+    "label": "Create table \"Customer\"",
+    "summary": "Creates table \"Customer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Customer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Customer\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Customer\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Customer\"",
+        "sql": "CREATE TABLE \"public\".\"Customer\" (\n  \"address\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"email\" text NOT NULL,\n  \"fullName\" text NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"isActive\" bool DEFAULT true NOT NULL,\n  \"phoneNumber\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Customer\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Customer\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.DecantBottle",
+    "label": "Create table \"DecantBottle\"",
+    "summary": "Creates table \"DecantBottle\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "DecantBottle"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"DecantBottle\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"DecantBottle\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"DecantBottle\"",
+        "sql": "CREATE TABLE \"public\".\"DecantBottle\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"initialVolumeMl\" int4 NOT NULL,\n  \"isActive\" bool DEFAULT true NOT NULL,\n  \"lastDecantedAt\" timestamptz,\n  \"parfumId\" int4 NOT NULL,\n  \"remainingVolumeMl\" int4 NOT NULL,\n  \"reservedAt\" timestamptz,\n  \"reservedById\" int4,\n  \"stockBatchId\" int4 NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"DecantBottle\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"DecantBottle\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.DecantOpperation",
+    "label": "Create table \"DecantOpperation\"",
+    "summary": "Creates table \"DecantOpperation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "DecantOpperation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"DecantOpperation\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"DecantOpperation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"DecantOpperation\"",
+        "sql": "CREATE TABLE \"public\".\"DecantOpperation\" (\n  \"decantBottleId\" int4 NOT NULL,\n  \"employeeId\" int4 NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"oppType\" text DEFAULT 'CONSUMPTION' NOT NULL,\n  \"orderId\" int4 NOT NULL,\n  \"performedAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"quantityMl\" int4 NOT NULL,\n  \"reversedOperationId\" int4,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"DecantOpperation_oppType_check_65d6655e\" CHECK (\"oppType\" IN ('CONSUMPTION', 'REVERSAL'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"DecantOpperation\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"DecantOpperation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.DeliveryCompany",
+    "label": "Create table \"DeliveryCompany\"",
+    "summary": "Creates table \"DeliveryCompany\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "DeliveryCompany"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"DeliveryCompany\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"DeliveryCompany\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"DeliveryCompany\"",
+        "sql": "CREATE TABLE \"public\".\"DeliveryCompany\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"delivreyPrice\" int4 NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"isActive\" bool DEFAULT true NOT NULL,\n  \"lastUsedAt\" timestamptz,\n  \"name\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"DeliveryCompany\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"DeliveryCompany\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.Order",
+    "label": "Create table \"Order\"",
+    "summary": "Creates table \"Order\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Order"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Order\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Order\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Order\"",
+        "sql": "CREATE TABLE \"public\".\"Order\" (\n  \"cancelledAt\" timestamptz,\n  \"cancelledBy\" int4,\n  \"createdBy\" int4 NOT NULL,\n  \"customerId\" int4 NOT NULL,\n  \"deliveryAdress\" text NOT NULL,\n  \"deliveryCompanyId\" int4,\n  \"deliveryPrice\" int4,\n  \"delivredAt\" timestamptz,\n  \"id\" SERIAL NOT NULL,\n  \"pendingAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"status\" text DEFAULT 'PENDING' NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"verifiedAt\" timestamptz,\n  \"verifiedBy\" int4,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"Order_status_check_ba3c86fa\" CHECK (\"status\" IN ('COMFIRMED', 'PENDING', 'CANCELLED', 'DELIVERD'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Order\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Order\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.OrderItem",
+    "label": "Create table \"OrderItem\"",
+    "summary": "Creates table \"OrderItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "OrderItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"OrderItem\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"OrderItem\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"OrderItem\"",
+        "sql": "CREATE TABLE \"public\".\"OrderItem\" (\n  \"id\" SERIAL NOT NULL,\n  \"orderId\" int4 NOT NULL,\n  \"parfumId\" int4 NOT NULL,\n  \"quantity\" int4 NOT NULL,\n  \"sellingType\" text NOT NULL,\n  \"totalPrice\" int4 NOT NULL,\n  \"unitPrice\" int4 NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"OrderItem_sellingType_check_5cd55605\" CHECK (\"sellingType\" IN ('COMPLETE', 'DECANT_10ML', 'DECANT_20ML'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"OrderItem\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"OrderItem\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.OrderitemConsumption",
+    "label": "Create table \"OrderitemConsumption\"",
+    "summary": "Creates table \"OrderitemConsumption\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "OrderitemConsumption"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"OrderitemConsumption\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"OrderitemConsumption\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"OrderitemConsumption\"",
+        "sql": "CREATE TABLE \"public\".\"OrderitemConsumption\" (\n  \"consumedAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"decantBottleId\" int4 NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"orderItemId\" int4 NOT NULL,\n  \"quantityMl\" int4 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"OrderitemConsumption\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"OrderitemConsumption\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.Parfum",
+    "label": "Create table \"Parfum\"",
+    "summary": "Creates table \"Parfum\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Parfum"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Parfum\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Parfum\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Parfum\"",
+        "sql": "CREATE TABLE \"public\".\"Parfum\" (\n  \"brandId\" int4 NOT NULL,\n  \"completePrice\" int4 NOT NULL,\n  \"decant10Price\" int4 NOT NULL,\n  \"decant20Price\" int4 NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"isActive\" bool DEFAULT true NOT NULL,\n  \"name\" text NOT NULL,\n  \"originalVolume\" int4 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Parfum\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Parfum\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.StockBatch",
+    "label": "Create table \"StockBatch\"",
+    "summary": "Creates table \"StockBatch\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "StockBatch"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"StockBatch\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockBatch\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"StockBatch\"",
+        "sql": "CREATE TABLE \"public\".\"StockBatch\" (\n  \"id\" SERIAL NOT NULL,\n  \"parfumId\" int4 NOT NULL,\n  \"purchaseCostPerBottle\" int4 NOT NULL,\n  \"quantity\" int4 NOT NULL,\n  \"receivedAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"receivedBy\" int4 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"StockBatch\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockBatch\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.User",
+    "label": "Create table \"User\"",
+    "summary": "Creates table \"User\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "User"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"User\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"User\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"User\"",
+        "sql": "CREATE TABLE \"public\".\"User\" (\n  \"Role\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"email\" text NOT NULL,\n  \"firstName\" text NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"isActive\" bool DEFAULT true NOT NULL,\n  \"lastLoginAt\" timestamptz,\n  \"lastName\" text NOT NULL,\n  \"lastUpdate\" timestamptz NOT NULL,\n  \"passwordHash\" text NOT NULL,\n  \"phoneNumber\" text NOT NULL,\n  \"username\" text NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"User_Role_check_3735df3b\" CHECK (\"Role\" IN ('OWNER', 'EMPLOYEE'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"User\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"User\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.Brand.Brand_name_key",
+    "label": "Add unique constraint on \"Brand\" (name)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "Brand_name_key",
+        "table": "Brand"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Brand_name_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Brand_name_key",
+          "public",
+          "\"public\".\"Brand\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"Brand_name_key\"",
+        "sql": "ALTER TABLE \"public\".\"Brand\" ADD CONSTRAINT \"Brand_name_key\" UNIQUE (\"name\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Brand_name_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Brand_name_key",
+          "public",
+          "\"public\".\"Brand\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.DecantOpperation.DecantOpperation_reversedOperationId_key",
+    "label": "Add unique constraint on \"DecantOpperation\" (reversedOperationId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "DecantOpperation_reversedOperationId_key",
+        "table": "DecantOpperation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"DecantOpperation_reversedOperationId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "DecantOpperation_reversedOperationId_key",
+          "public",
+          "\"public\".\"DecantOpperation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"DecantOpperation_reversedOperationId_key\"",
+        "sql": "ALTER TABLE \"public\".\"DecantOpperation\" ADD CONSTRAINT \"DecantOpperation_reversedOperationId_key\" UNIQUE (\"reversedOperationId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"DecantOpperation_reversedOperationId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "DecantOpperation_reversedOperationId_key",
+          "public",
+          "\"public\".\"DecantOpperation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.Parfum.Parfum_brandId_name_originalVolume_key",
+    "label": "Add unique constraint on \"Parfum\" (brandId, name, originalVolume)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "Parfum_brandId_name_originalVolume_key",
+        "table": "Parfum"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Parfum_brandId_name_originalVolume_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Parfum_brandId_name_originalVolume_key",
+          "public",
+          "\"public\".\"Parfum\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"Parfum_brandId_name_originalVolume_key\"",
+        "sql": "ALTER TABLE \"public\".\"Parfum\" ADD CONSTRAINT \"Parfum_brandId_name_originalVolume_key\" UNIQUE (\"brandId\", \"name\", \"originalVolume\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Parfum_brandId_name_originalVolume_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Parfum_brandId_name_originalVolume_key",
+          "public",
+          "\"public\".\"Parfum\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.User.User_username_key",
+    "label": "Add unique constraint on \"User\" (username)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "User_username_key",
+        "table": "User"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"User_username_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "User_username_key",
+          "public",
+          "\"public\".\"User\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"User_username_key\"",
+        "sql": "ALTER TABLE \"public\".\"User\" ADD CONSTRAINT \"User_username_key\" UNIQUE (\"username\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"User_username_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "User_username_key",
+          "public",
+          "\"public\".\"User\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.User.User_email_key",
+    "label": "Add unique constraint on \"User\" (email)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "User_email_key",
+        "table": "User"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"User_email_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "User_email_key",
+          "public",
+          "\"public\".\"User\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"User_email_key\"",
+        "sql": "ALTER TABLE \"public\".\"User\" ADD CONSTRAINT \"User_email_key\" UNIQUE (\"email\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"User_email_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "User_email_key",
+          "public",
+          "\"public\".\"User\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.DecantBottle.DecantBottle_parfumId_idx_e62e82ad",
+    "label": "Create index \"DecantBottle_parfumId_idx_e62e82ad\" on \"DecantBottle\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "DecantBottle_parfumId_idx_e62e82ad",
+        "table": "DecantBottle"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"DecantBottle_parfumId_idx_e62e82ad\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"DecantBottle_parfumId_idx_e62e82ad\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"DecantBottle_parfumId_idx_e62e82ad\"",
+        "sql": "CREATE INDEX \"DecantBottle_parfumId_idx_e62e82ad\" ON \"public\".\"DecantBottle\" (\"parfumId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"DecantBottle_parfumId_idx_e62e82ad\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"DecantBottle_parfumId_idx_e62e82ad\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.DecantBottle.DecantBottle_reservedById_idx_18189388",
+    "label": "Create index \"DecantBottle_reservedById_idx_18189388\" on \"DecantBottle\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "DecantBottle_reservedById_idx_18189388",
+        "table": "DecantBottle"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"DecantBottle_reservedById_idx_18189388\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"DecantBottle_reservedById_idx_18189388\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"DecantBottle_reservedById_idx_18189388\"",
+        "sql": "CREATE INDEX \"DecantBottle_reservedById_idx_18189388\" ON \"public\".\"DecantBottle\" (\"reservedById\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"DecantBottle_reservedById_idx_18189388\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"DecantBottle_reservedById_idx_18189388\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.DecantBottle.DecantBottle_stockBatchId_idx_a1b7aade",
+    "label": "Create index \"DecantBottle_stockBatchId_idx_a1b7aade\" on \"DecantBottle\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "DecantBottle_stockBatchId_idx_a1b7aade",
+        "table": "DecantBottle"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"DecantBottle_stockBatchId_idx_a1b7aade\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"DecantBottle_stockBatchId_idx_a1b7aade\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"DecantBottle_stockBatchId_idx_a1b7aade\"",
+        "sql": "CREATE INDEX \"DecantBottle_stockBatchId_idx_a1b7aade\" ON \"public\".\"DecantBottle\" (\"stockBatchId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"DecantBottle_stockBatchId_idx_a1b7aade\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"DecantBottle_stockBatchId_idx_a1b7aade\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.DecantOpperation.DecantOpperation_decantBottleId_idx_a6360438",
+    "label": "Create index \"DecantOpperation_decantBottleId_idx_a6360438\" on \"DecantOpperation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "DecantOpperation_decantBottleId_idx_a6360438",
+        "table": "DecantOpperation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"DecantOpperation_decantBottleId_idx_a6360438\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"DecantOpperation_decantBottleId_idx_a6360438\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"DecantOpperation_decantBottleId_idx_a6360438\"",
+        "sql": "CREATE INDEX \"DecantOpperation_decantBottleId_idx_a6360438\" ON \"public\".\"DecantOpperation\" (\"decantBottleId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"DecantOpperation_decantBottleId_idx_a6360438\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"DecantOpperation_decantBottleId_idx_a6360438\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.DecantOpperation.DecantOpperation_employeeId_idx_087dd4a6",
+    "label": "Create index \"DecantOpperation_employeeId_idx_087dd4a6\" on \"DecantOpperation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "DecantOpperation_employeeId_idx_087dd4a6",
+        "table": "DecantOpperation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"DecantOpperation_employeeId_idx_087dd4a6\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"DecantOpperation_employeeId_idx_087dd4a6\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"DecantOpperation_employeeId_idx_087dd4a6\"",
+        "sql": "CREATE INDEX \"DecantOpperation_employeeId_idx_087dd4a6\" ON \"public\".\"DecantOpperation\" (\"employeeId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"DecantOpperation_employeeId_idx_087dd4a6\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"DecantOpperation_employeeId_idx_087dd4a6\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.DecantOpperation.DecantOpperation_orderId_idx_d284871b",
+    "label": "Create index \"DecantOpperation_orderId_idx_d284871b\" on \"DecantOpperation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "DecantOpperation_orderId_idx_d284871b",
+        "table": "DecantOpperation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"DecantOpperation_orderId_idx_d284871b\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"DecantOpperation_orderId_idx_d284871b\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"DecantOpperation_orderId_idx_d284871b\"",
+        "sql": "CREATE INDEX \"DecantOpperation_orderId_idx_d284871b\" ON \"public\".\"DecantOpperation\" (\"orderId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"DecantOpperation_orderId_idx_d284871b\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"DecantOpperation_orderId_idx_d284871b\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Order.Order_cancelledBy_idx_c27f79a3",
+    "label": "Create index \"Order_cancelledBy_idx_c27f79a3\" on \"Order\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Order_cancelledBy_idx_c27f79a3",
+        "table": "Order"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Order_cancelledBy_idx_c27f79a3\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Order_cancelledBy_idx_c27f79a3\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Order_cancelledBy_idx_c27f79a3\"",
+        "sql": "CREATE INDEX \"Order_cancelledBy_idx_c27f79a3\" ON \"public\".\"Order\" (\"cancelledBy\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Order_cancelledBy_idx_c27f79a3\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Order_cancelledBy_idx_c27f79a3\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Order.Order_createdBy_idx_ba0f792f",
+    "label": "Create index \"Order_createdBy_idx_ba0f792f\" on \"Order\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Order_createdBy_idx_ba0f792f",
+        "table": "Order"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Order_createdBy_idx_ba0f792f\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Order_createdBy_idx_ba0f792f\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Order_createdBy_idx_ba0f792f\"",
+        "sql": "CREATE INDEX \"Order_createdBy_idx_ba0f792f\" ON \"public\".\"Order\" (\"createdBy\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Order_createdBy_idx_ba0f792f\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Order_createdBy_idx_ba0f792f\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Order.Order_customerId_idx_b2a8a46c",
+    "label": "Create index \"Order_customerId_idx_b2a8a46c\" on \"Order\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Order_customerId_idx_b2a8a46c",
+        "table": "Order"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Order_customerId_idx_b2a8a46c\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Order_customerId_idx_b2a8a46c\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Order_customerId_idx_b2a8a46c\"",
+        "sql": "CREATE INDEX \"Order_customerId_idx_b2a8a46c\" ON \"public\".\"Order\" (\"customerId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Order_customerId_idx_b2a8a46c\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Order_customerId_idx_b2a8a46c\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Order.Order_deliveryCompanyId_idx_f23a4b4c",
+    "label": "Create index \"Order_deliveryCompanyId_idx_f23a4b4c\" on \"Order\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Order_deliveryCompanyId_idx_f23a4b4c",
+        "table": "Order"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Order_deliveryCompanyId_idx_f23a4b4c\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Order_deliveryCompanyId_idx_f23a4b4c\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Order_deliveryCompanyId_idx_f23a4b4c\"",
+        "sql": "CREATE INDEX \"Order_deliveryCompanyId_idx_f23a4b4c\" ON \"public\".\"Order\" (\"deliveryCompanyId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Order_deliveryCompanyId_idx_f23a4b4c\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Order_deliveryCompanyId_idx_f23a4b4c\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Order.Order_verifiedBy_idx_950670c2",
+    "label": "Create index \"Order_verifiedBy_idx_950670c2\" on \"Order\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Order_verifiedBy_idx_950670c2",
+        "table": "Order"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Order_verifiedBy_idx_950670c2\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Order_verifiedBy_idx_950670c2\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Order_verifiedBy_idx_950670c2\"",
+        "sql": "CREATE INDEX \"Order_verifiedBy_idx_950670c2\" ON \"public\".\"Order\" (\"verifiedBy\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Order_verifiedBy_idx_950670c2\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Order_verifiedBy_idx_950670c2\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.OrderItem.OrderItem_orderId_idx_d284871b",
+    "label": "Create index \"OrderItem_orderId_idx_d284871b\" on \"OrderItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "OrderItem_orderId_idx_d284871b",
+        "table": "OrderItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"OrderItem_orderId_idx_d284871b\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"OrderItem_orderId_idx_d284871b\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"OrderItem_orderId_idx_d284871b\"",
+        "sql": "CREATE INDEX \"OrderItem_orderId_idx_d284871b\" ON \"public\".\"OrderItem\" (\"orderId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"OrderItem_orderId_idx_d284871b\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"OrderItem_orderId_idx_d284871b\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.OrderItem.OrderItem_parfumId_idx_e62e82ad",
+    "label": "Create index \"OrderItem_parfumId_idx_e62e82ad\" on \"OrderItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "OrderItem_parfumId_idx_e62e82ad",
+        "table": "OrderItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"OrderItem_parfumId_idx_e62e82ad\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"OrderItem_parfumId_idx_e62e82ad\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"OrderItem_parfumId_idx_e62e82ad\"",
+        "sql": "CREATE INDEX \"OrderItem_parfumId_idx_e62e82ad\" ON \"public\".\"OrderItem\" (\"parfumId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"OrderItem_parfumId_idx_e62e82ad\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"OrderItem_parfumId_idx_e62e82ad\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.OrderitemConsumption.OrderitemConsumption_decantBottleId_idx_a6360438",
+    "label": "Create index \"OrderitemConsumption_decantBottleId_idx_a6360438\" on \"OrderitemConsumption\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "OrderitemConsumption_decantBottleId_idx_a6360438",
+        "table": "OrderitemConsumption"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"OrderitemConsumption_decantBottleId_idx_a6360438\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"OrderitemConsumption_decantBottleId_idx_a6360438\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"OrderitemConsumption_decantBottleId_idx_a6360438\"",
+        "sql": "CREATE INDEX \"OrderitemConsumption_decantBottleId_idx_a6360438\" ON \"public\".\"OrderitemConsumption\" (\"decantBottleId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"OrderitemConsumption_decantBottleId_idx_a6360438\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"OrderitemConsumption_decantBottleId_idx_a6360438\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.OrderitemConsumption.OrderitemConsumption_orderItemId_idx_99e2d9f7",
+    "label": "Create index \"OrderitemConsumption_orderItemId_idx_99e2d9f7\" on \"OrderitemConsumption\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "OrderitemConsumption_orderItemId_idx_99e2d9f7",
+        "table": "OrderitemConsumption"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"OrderitemConsumption_orderItemId_idx_99e2d9f7\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"OrderitemConsumption_orderItemId_idx_99e2d9f7\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"OrderitemConsumption_orderItemId_idx_99e2d9f7\"",
+        "sql": "CREATE INDEX \"OrderitemConsumption_orderItemId_idx_99e2d9f7\" ON \"public\".\"OrderitemConsumption\" (\"orderItemId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"OrderitemConsumption_orderItemId_idx_99e2d9f7\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"OrderitemConsumption_orderItemId_idx_99e2d9f7\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Parfum.Parfum_brandId_idx_02e95397",
+    "label": "Create index \"Parfum_brandId_idx_02e95397\" on \"Parfum\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Parfum_brandId_idx_02e95397",
+        "table": "Parfum"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Parfum_brandId_idx_02e95397\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Parfum_brandId_idx_02e95397\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Parfum_brandId_idx_02e95397\"",
+        "sql": "CREATE INDEX \"Parfum_brandId_idx_02e95397\" ON \"public\".\"Parfum\" (\"brandId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Parfum_brandId_idx_02e95397\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Parfum_brandId_idx_02e95397\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockBatch.StockBatch_parfumId_idx_e62e82ad",
+    "label": "Create index \"StockBatch_parfumId_idx_e62e82ad\" on \"StockBatch\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockBatch_parfumId_idx_e62e82ad",
+        "table": "StockBatch"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockBatch_parfumId_idx_e62e82ad\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockBatch_parfumId_idx_e62e82ad\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockBatch_parfumId_idx_e62e82ad\"",
+        "sql": "CREATE INDEX \"StockBatch_parfumId_idx_e62e82ad\" ON \"public\".\"StockBatch\" (\"parfumId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockBatch_parfumId_idx_e62e82ad\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockBatch_parfumId_idx_e62e82ad\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockBatch.StockBatch_receivedBy_idx_c1d3f365",
+    "label": "Create index \"StockBatch_receivedBy_idx_c1d3f365\" on \"StockBatch\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockBatch_receivedBy_idx_c1d3f365",
+        "table": "StockBatch"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockBatch_receivedBy_idx_c1d3f365\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockBatch_receivedBy_idx_c1d3f365\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockBatch_receivedBy_idx_c1d3f365\"",
+        "sql": "CREATE INDEX \"StockBatch_receivedBy_idx_c1d3f365\" ON \"public\".\"StockBatch\" (\"receivedBy\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockBatch_receivedBy_idx_c1d3f365\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockBatch_receivedBy_idx_c1d3f365\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.DecantBottle.DecantBottle_parfumId_fkey",
+    "label": "Add foreign key \"DecantBottle_parfumId_fkey\" on \"DecantBottle\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "DecantBottle_parfumId_fkey",
+        "table": "DecantBottle"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"DecantBottle_parfumId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "DecantBottle_parfumId_fkey",
+          "public",
+          "\"public\".\"DecantBottle\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"DecantBottle_parfumId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"DecantBottle\"\nADD CONSTRAINT \"DecantBottle_parfumId_fkey\"\nFOREIGN KEY (\"parfumId\")\nREFERENCES \"public\".\"Parfum\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"DecantBottle_parfumId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "DecantBottle_parfumId_fkey",
+          "public",
+          "\"public\".\"DecantBottle\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.DecantBottle.DecantBottle_stockBatchId_fkey",
+    "label": "Add foreign key \"DecantBottle_stockBatchId_fkey\" on \"DecantBottle\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "DecantBottle_stockBatchId_fkey",
+        "table": "DecantBottle"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"DecantBottle_stockBatchId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "DecantBottle_stockBatchId_fkey",
+          "public",
+          "\"public\".\"DecantBottle\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"DecantBottle_stockBatchId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"DecantBottle\"\nADD CONSTRAINT \"DecantBottle_stockBatchId_fkey\"\nFOREIGN KEY (\"stockBatchId\")\nREFERENCES \"public\".\"StockBatch\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"DecantBottle_stockBatchId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "DecantBottle_stockBatchId_fkey",
+          "public",
+          "\"public\".\"DecantBottle\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.DecantBottle.DecantBottle_reservedById_fkey",
+    "label": "Add foreign key \"DecantBottle_reservedById_fkey\" on \"DecantBottle\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "DecantBottle_reservedById_fkey",
+        "table": "DecantBottle"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"DecantBottle_reservedById_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "DecantBottle_reservedById_fkey",
+          "public",
+          "\"public\".\"DecantBottle\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"DecantBottle_reservedById_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"DecantBottle\"\nADD CONSTRAINT \"DecantBottle_reservedById_fkey\"\nFOREIGN KEY (\"reservedById\")\nREFERENCES \"public\".\"User\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"DecantBottle_reservedById_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "DecantBottle_reservedById_fkey",
+          "public",
+          "\"public\".\"DecantBottle\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.DecantOpperation.DecantOpperation_decantBottleId_fkey",
+    "label": "Add foreign key \"DecantOpperation_decantBottleId_fkey\" on \"DecantOpperation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "DecantOpperation_decantBottleId_fkey",
+        "table": "DecantOpperation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"DecantOpperation_decantBottleId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "DecantOpperation_decantBottleId_fkey",
+          "public",
+          "\"public\".\"DecantOpperation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"DecantOpperation_decantBottleId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"DecantOpperation\"\nADD CONSTRAINT \"DecantOpperation_decantBottleId_fkey\"\nFOREIGN KEY (\"decantBottleId\")\nREFERENCES \"public\".\"DecantBottle\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"DecantOpperation_decantBottleId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "DecantOpperation_decantBottleId_fkey",
+          "public",
+          "\"public\".\"DecantOpperation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.DecantOpperation.DecantOpperation_employeeId_fkey",
+    "label": "Add foreign key \"DecantOpperation_employeeId_fkey\" on \"DecantOpperation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "DecantOpperation_employeeId_fkey",
+        "table": "DecantOpperation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"DecantOpperation_employeeId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "DecantOpperation_employeeId_fkey",
+          "public",
+          "\"public\".\"DecantOpperation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"DecantOpperation_employeeId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"DecantOpperation\"\nADD CONSTRAINT \"DecantOpperation_employeeId_fkey\"\nFOREIGN KEY (\"employeeId\")\nREFERENCES \"public\".\"User\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"DecantOpperation_employeeId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "DecantOpperation_employeeId_fkey",
+          "public",
+          "\"public\".\"DecantOpperation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.DecantOpperation.DecantOpperation_orderId_fkey",
+    "label": "Add foreign key \"DecantOpperation_orderId_fkey\" on \"DecantOpperation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "DecantOpperation_orderId_fkey",
+        "table": "DecantOpperation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"DecantOpperation_orderId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "DecantOpperation_orderId_fkey",
+          "public",
+          "\"public\".\"DecantOpperation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"DecantOpperation_orderId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"DecantOpperation\"\nADD CONSTRAINT \"DecantOpperation_orderId_fkey\"\nFOREIGN KEY (\"orderId\")\nREFERENCES \"public\".\"Order\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"DecantOpperation_orderId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "DecantOpperation_orderId_fkey",
+          "public",
+          "\"public\".\"DecantOpperation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.DecantOpperation.DecantOpperation_reversedOperationId_fkey",
+    "label": "Add foreign key \"DecantOpperation_reversedOperationId_fkey\" on \"DecantOpperation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "DecantOpperation_reversedOperationId_fkey",
+        "table": "DecantOpperation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"DecantOpperation_reversedOperationId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "DecantOpperation_reversedOperationId_fkey",
+          "public",
+          "\"public\".\"DecantOpperation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"DecantOpperation_reversedOperationId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"DecantOpperation\"\nADD CONSTRAINT \"DecantOpperation_reversedOperationId_fkey\"\nFOREIGN KEY (\"reversedOperationId\")\nREFERENCES \"public\".\"DecantOpperation\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"DecantOpperation_reversedOperationId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "DecantOpperation_reversedOperationId_fkey",
+          "public",
+          "\"public\".\"DecantOpperation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Order.Order_createdBy_fkey",
+    "label": "Add foreign key \"Order_createdBy_fkey\" on \"Order\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Order_createdBy_fkey",
+        "table": "Order"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Order_createdBy_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Order_createdBy_fkey",
+          "public",
+          "\"public\".\"Order\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Order_createdBy_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Order\"\nADD CONSTRAINT \"Order_createdBy_fkey\"\nFOREIGN KEY (\"createdBy\")\nREFERENCES \"public\".\"User\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Order_createdBy_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Order_createdBy_fkey",
+          "public",
+          "\"public\".\"Order\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Order.Order_verifiedBy_fkey",
+    "label": "Add foreign key \"Order_verifiedBy_fkey\" on \"Order\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Order_verifiedBy_fkey",
+        "table": "Order"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Order_verifiedBy_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Order_verifiedBy_fkey",
+          "public",
+          "\"public\".\"Order\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Order_verifiedBy_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Order\"\nADD CONSTRAINT \"Order_verifiedBy_fkey\"\nFOREIGN KEY (\"verifiedBy\")\nREFERENCES \"public\".\"User\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Order_verifiedBy_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Order_verifiedBy_fkey",
+          "public",
+          "\"public\".\"Order\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Order.Order_cancelledBy_fkey",
+    "label": "Add foreign key \"Order_cancelledBy_fkey\" on \"Order\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Order_cancelledBy_fkey",
+        "table": "Order"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Order_cancelledBy_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Order_cancelledBy_fkey",
+          "public",
+          "\"public\".\"Order\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Order_cancelledBy_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Order\"\nADD CONSTRAINT \"Order_cancelledBy_fkey\"\nFOREIGN KEY (\"cancelledBy\")\nREFERENCES \"public\".\"User\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Order_cancelledBy_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Order_cancelledBy_fkey",
+          "public",
+          "\"public\".\"Order\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Order.Order_customerId_fkey",
+    "label": "Add foreign key \"Order_customerId_fkey\" on \"Order\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Order_customerId_fkey",
+        "table": "Order"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Order_customerId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Order_customerId_fkey",
+          "public",
+          "\"public\".\"Order\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Order_customerId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Order\"\nADD CONSTRAINT \"Order_customerId_fkey\"\nFOREIGN KEY (\"customerId\")\nREFERENCES \"public\".\"Customer\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Order_customerId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Order_customerId_fkey",
+          "public",
+          "\"public\".\"Order\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Order.Order_deliveryCompanyId_fkey",
+    "label": "Add foreign key \"Order_deliveryCompanyId_fkey\" on \"Order\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Order_deliveryCompanyId_fkey",
+        "table": "Order"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Order_deliveryCompanyId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Order_deliveryCompanyId_fkey",
+          "public",
+          "\"public\".\"Order\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Order_deliveryCompanyId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Order\"\nADD CONSTRAINT \"Order_deliveryCompanyId_fkey\"\nFOREIGN KEY (\"deliveryCompanyId\")\nREFERENCES \"public\".\"DeliveryCompany\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Order_deliveryCompanyId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Order_deliveryCompanyId_fkey",
+          "public",
+          "\"public\".\"Order\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.OrderItem.OrderItem_orderId_fkey",
+    "label": "Add foreign key \"OrderItem_orderId_fkey\" on \"OrderItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "OrderItem_orderId_fkey",
+        "table": "OrderItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"OrderItem_orderId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "OrderItem_orderId_fkey",
+          "public",
+          "\"public\".\"OrderItem\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"OrderItem_orderId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"OrderItem\"\nADD CONSTRAINT \"OrderItem_orderId_fkey\"\nFOREIGN KEY (\"orderId\")\nREFERENCES \"public\".\"Order\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"OrderItem_orderId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "OrderItem_orderId_fkey",
+          "public",
+          "\"public\".\"OrderItem\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.OrderItem.OrderItem_parfumId_fkey",
+    "label": "Add foreign key \"OrderItem_parfumId_fkey\" on \"OrderItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "OrderItem_parfumId_fkey",
+        "table": "OrderItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"OrderItem_parfumId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "OrderItem_parfumId_fkey",
+          "public",
+          "\"public\".\"OrderItem\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"OrderItem_parfumId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"OrderItem\"\nADD CONSTRAINT \"OrderItem_parfumId_fkey\"\nFOREIGN KEY (\"parfumId\")\nREFERENCES \"public\".\"Parfum\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"OrderItem_parfumId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "OrderItem_parfumId_fkey",
+          "public",
+          "\"public\".\"OrderItem\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.OrderitemConsumption.OrderitemConsumption_orderItemId_fkey",
+    "label": "Add foreign key \"OrderitemConsumption_orderItemId_fkey\" on \"OrderitemConsumption\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "OrderitemConsumption_orderItemId_fkey",
+        "table": "OrderitemConsumption"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"OrderitemConsumption_orderItemId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "OrderitemConsumption_orderItemId_fkey",
+          "public",
+          "\"public\".\"OrderitemConsumption\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"OrderitemConsumption_orderItemId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"OrderitemConsumption\"\nADD CONSTRAINT \"OrderitemConsumption_orderItemId_fkey\"\nFOREIGN KEY (\"orderItemId\")\nREFERENCES \"public\".\"OrderItem\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"OrderitemConsumption_orderItemId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "OrderitemConsumption_orderItemId_fkey",
+          "public",
+          "\"public\".\"OrderitemConsumption\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.OrderitemConsumption.OrderitemConsumption_decantBottleId_fkey",
+    "label": "Add foreign key \"OrderitemConsumption_decantBottleId_fkey\" on \"OrderitemConsumption\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "OrderitemConsumption_decantBottleId_fkey",
+        "table": "OrderitemConsumption"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"OrderitemConsumption_decantBottleId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "OrderitemConsumption_decantBottleId_fkey",
+          "public",
+          "\"public\".\"OrderitemConsumption\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"OrderitemConsumption_decantBottleId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"OrderitemConsumption\"\nADD CONSTRAINT \"OrderitemConsumption_decantBottleId_fkey\"\nFOREIGN KEY (\"decantBottleId\")\nREFERENCES \"public\".\"DecantBottle\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"OrderitemConsumption_decantBottleId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "OrderitemConsumption_decantBottleId_fkey",
+          "public",
+          "\"public\".\"OrderitemConsumption\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Parfum.Parfum_brandId_fkey",
+    "label": "Add foreign key \"Parfum_brandId_fkey\" on \"Parfum\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Parfum_brandId_fkey",
+        "table": "Parfum"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Parfum_brandId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Parfum_brandId_fkey",
+          "public",
+          "\"public\".\"Parfum\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Parfum_brandId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Parfum\"\nADD CONSTRAINT \"Parfum_brandId_fkey\"\nFOREIGN KEY (\"brandId\")\nREFERENCES \"public\".\"Brand\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Parfum_brandId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Parfum_brandId_fkey",
+          "public",
+          "\"public\".\"Parfum\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StockBatch.StockBatch_parfumId_fkey",
+    "label": "Add foreign key \"StockBatch_parfumId_fkey\" on \"StockBatch\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StockBatch_parfumId_fkey",
+        "table": "StockBatch"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StockBatch_parfumId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockBatch_parfumId_fkey",
+          "public",
+          "\"public\".\"StockBatch\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StockBatch_parfumId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StockBatch\"\nADD CONSTRAINT \"StockBatch_parfumId_fkey\"\nFOREIGN KEY (\"parfumId\")\nREFERENCES \"public\".\"Parfum\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StockBatch_parfumId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockBatch_parfumId_fkey",
+          "public",
+          "\"public\".\"StockBatch\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StockBatch.StockBatch_receivedBy_fkey",
+    "label": "Add foreign key \"StockBatch_receivedBy_fkey\" on \"StockBatch\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StockBatch_receivedBy_fkey",
+        "table": "StockBatch"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StockBatch_receivedBy_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockBatch_receivedBy_fkey",
+          "public",
+          "\"public\".\"StockBatch\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StockBatch_receivedBy_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StockBatch\"\nADD CONSTRAINT \"StockBatch_receivedBy_fkey\"\nFOREIGN KEY (\"receivedBy\")\nREFERENCES \"public\".\"User\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StockBatch_receivedBy_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockBatch_receivedBy_fkey",
+          "public",
+          "\"public\".\"StockBatch\""
+        ]
+      }
+    ]
+  }
+]

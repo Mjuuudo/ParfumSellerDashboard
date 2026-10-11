@@ -12,5 +12,5 @@ database:
 	docker compose up database
 application:
 	docker compose up backend 
-frontend:
+UI:
 	docker compose up frontend
