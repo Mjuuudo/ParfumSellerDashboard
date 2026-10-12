@@ -6,7 +6,7 @@ import { UnauthorizedException } from '@nestjs/common';
 import bcrypt from 'bcrypt';
 import { Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-
+import { Temporal } from '@js-temporal/polyfill';
 
 
 @Injectable()
@@ -43,13 +43,18 @@ export class AuthService {
 
         const token = await this.jwtService.signAsync(payload); 
 
+        
+        await db.orm.public.User.where({id: user.id}).
+        update({lastLoginAt: Temporal.Now.instant()});
+
+
         return ({
             access_token: token,
             user: {
                 id: user.id,
                 username: user.username,
                 role: user.Role
-            }});
+            }});    
         }; 
 
 
