@@ -3,6 +3,8 @@ import { db } from "../prisma/db.js";
 import bcrypt from "bcrypt"
 import { UserCreationDto } from "./dto/create-user.dto.js";
 import { UnauthorizedException } from "@nestjs/common";
+import { NotFoundException } from "@nestjs/common";
+
 
 @Injectable()
 export class UserService{
@@ -25,7 +27,7 @@ export class UserService{
             email: data.email,
             phoneNumber: data.phoneNumber,
             passwordHash: hashedPassword,
-            Role: "EMPLOYEE" as const
+            Role: data.role
         };
 
         return await db.orm.public.User.create(user);
@@ -39,6 +41,16 @@ export class UserService{
             throw new UnauthorizedException('User Does Not Exists !');
         }
         return user;
+    }
+
+    async getAllUsers () {
+        const users = await db.orm.public.User.all();
+
+        if (!users) {
+            throw new NotFoundException('No Users Found !');
+        }
+
+        return users;
     }
 
 

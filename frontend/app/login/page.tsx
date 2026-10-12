@@ -34,8 +34,6 @@ export default function LoginPage() {
     }
 
     router.push("/dashboard");
-    // We'll connect this to the NestJS login API next.
-    console.log({ username, password });
   }
 
   return (
