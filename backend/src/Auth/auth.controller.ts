@@ -2,7 +2,7 @@ import { Controller, Post, Body, Res } from '@nestjs/common';
 import { UserLoginDto } from './dto/user-login.dto.js';
 import { AuthService } from './auth.service.js';
 import type { Response } from 'express';
-
+import { HttpCode, HttpStatus } from '@nestjs/common';
 
 @Controller('api/auth')
 export class AuthController {
@@ -13,6 +13,7 @@ export class AuthController {
 
 
 
+    @HttpCode(HttpStatus.OK)
     @Post('/login')
     async login(@Body() data: UserLoginDto, @Res({passthrough: true}) response: Response) {
         const loginObject = await this.authService.login(data);

@@ -2,15 +2,38 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const loginData = {
+      username,
+      password,
+    };
 
+    const result = await fetch("http://localhost:8000/api/auth/login", {
+        method: "post",
+        credentials: "include",
+        headers: {
+            "Content-type": "application/json"
+        },
+        body: JSON.stringify(loginData)
+    })
+
+    if (!result.ok) {
+        setUsername("");
+        setPassword("");
+        alert("Login failed. Please check your credentials and try again.");
+        return;
+    }
+
+    router.push("/dashboard");
     // We'll connect this to the NestJS login API next.
     console.log({ username, password });
   }

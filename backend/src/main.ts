@@ -3,6 +3,9 @@ import { AppModule, ObserveInstrument } from './app.module.js';
 import { ValidationPipe } from '@nestjs/common';
 import { PrismaExceptionFilter } from "./common/filters/prisma-exception.filter.js"
 
+const frontendUrl = process.env.FRONTEND_URL ?? 'http://localhost:3000';
+
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     instrument: ObserveInstrument,
@@ -15,6 +18,11 @@ async function bootstrap() {
   app.useGlobalFilters(
     new PrismaExceptionFilter(app.get(HttpAdapterHost).httpAdapter),
   )
+  app.enableCors({
+    origin: frontendUrl ?? '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
   await app.listen(process.env.PORT ?? 3000);
 }
 await bootstrap();
