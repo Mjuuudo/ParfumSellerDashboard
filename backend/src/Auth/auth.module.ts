@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
+import { AuthGuard } from './auth.guard.js';
 
 
 const secret = process.env.JWT_SECRET;
@@ -12,10 +13,11 @@ if (!secret) throw new Error('JWT_SECRET is not set');
     imports: [
         JwtModule.register({
             secret,
-            signOptions: { expiresIn: (process.env.JWT_EXPIRES_IN ?? '1h') as any },
+            signOptions: { expiresIn: (Number(process.env.JWT_EXPIRES_IN) ?? '1h') as any },
         }),
     ],
     controllers: [AuthController],
-    providers: [AuthService],
+    providers: [AuthService, AuthGuard],
+    exports: [AuthGuard, JwtModule],
 })
 export class AuthModule {}

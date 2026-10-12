@@ -1,8 +1,8 @@
-import { Body, Controller, Post, Get   } from "@nestjs/common";
+import { Body, Controller, Post, Get, Req, Res   } from "@nestjs/common";
 import { UserCreationDto } from "./dto/create-user.dto.js";
 import { UserService } from "./users.service.js";
 import { AuthGuard } from "../Auth/auth.guard.js";
-
+import { UseGuards } from "@nestjs/common";
 
 @Controller("/api/user")
 export class UserController{
@@ -22,15 +22,15 @@ export class UserController{
     }
 
 
-    // @Guard(AuthGuard)
-    // @UseGuard(AuthGuard)
-    @Get()
-    async getAllUsers () {
-    //     const users = await this.userServices.getAllUsers();
-    //     return users.map(user => {
-    //         const { passwordHash: _passwordHash, ...userWithoutPassword } = user;
-    //         return userWithoutPassword;
-    // });
-    }
+    @Get('me')
+    @UseGuards(AuthGuard)
+    async getMe(@Req() request: any) {
+        const user = request.user;
+        const userObject = await this.userServices.getUserById(user.id);
 
+        const { passwordHash, ...userWithoutPassword } = userObject;
+
+
+        return userWithoutPassword;
+    }
 }

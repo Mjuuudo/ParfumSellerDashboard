@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { db } from "../prisma/db.js";
 import bcrypt from "bcrypt"
 import { UserCreationDto } from "./dto/create-user.dto.js";
-
+import { UnauthorizedException } from "@nestjs/common";
 
 @Injectable()
 export class UserService{
@@ -29,6 +29,16 @@ export class UserService{
         };
 
         return await db.orm.public.User.create(user);
+    }
+
+
+    async getUserById ( id: number ) {
+        const user = await db.orm.public.User.where({id: id}).first();
+
+        if (!user) {
+            throw new UnauthorizedException('User Does Not Exists !');
+        }
+        return user;
     }
 
 

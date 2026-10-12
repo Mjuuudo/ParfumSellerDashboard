@@ -15,12 +15,16 @@ export class AuthGuard implements CanActivate{
 
     async canActivate (context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest();
+        if (request.cookies['access_token'] === undefined)
+            throw new UnauthorizedException('Token Not Provided !');
+        
+        
+
         const token = request.cookies['access_token'];
 
         if (!token) {
             throw new UnauthorizedException('No Token Provided !');
         }
-
         try {
             const payload = await this.jwtService.verifyAsync(token);
         
