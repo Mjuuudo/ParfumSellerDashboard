@@ -44,7 +44,11 @@ export default function UsersPage() {
 
         if (response.status === 401){
           router.push('/login')
+        }else if ( response.status === 403 ) {
+          router.push('/dashboard')
         }
+
+
         if (!response.ok) {
           alert("Error Happened While Fetching Data");
           return;

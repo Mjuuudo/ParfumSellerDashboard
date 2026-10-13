@@ -2,10 +2,11 @@ import { IsEmail, IsNotEmpty, IsString, MinLength, IsEnum } from "class-validato
 
 
 
-enum RoleEnum{
-    OWNER,
-    EMPLOYEE
-}
+export const RoleEnum = {
+    OWNER: 'OWNER',
+    EMPLOYEE: 'EMPLOYEE',
+} as const;
+export type RoleEnum = typeof RoleEnum[keyof typeof RoleEnum];
 export class UserCreationDto {
     @IsNotEmpty()
     @IsString()

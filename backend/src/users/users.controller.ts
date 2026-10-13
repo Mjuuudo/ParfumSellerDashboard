@@ -55,7 +55,9 @@ export class UserController{
         console.log(`[AUTH GUARD] Checking If The User Is LoggedIn !`);
 
 
-        return [];
+        return {
+            message: "Authorized !"
+        };
     }
 
     @Get('isOwner')
@@ -64,6 +66,8 @@ export class UserController{
     isOwner () {
         console.log(`[AUTH GUARD] Checking If The User Is Owner !`);
 
-        return [];
+        return {
+            message: "Authorized !"
+        };
     }
 }
