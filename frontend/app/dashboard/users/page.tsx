@@ -42,13 +42,14 @@ export default function UsersPage() {
           credentials: "include",
         });
 
+        console.log(response.status);
         if (response.status === 401){
           router.push('/login')
         }else if ( response.status === 403 ) {
           router.push('/dashboard')
         }
 
-
+        
         if (!response.ok) {
           alert("Error Happened While Fetching Data");
           return;
@@ -64,6 +65,32 @@ export default function UsersPage() {
     fetchUsers();
   }, []);
 
+
+  // Called on every keystroke in the search input
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // TODO: store e.target.value in state and filter the users list
+  };
+
+  // Called when the "Filter" button is clicked
+  const handleFilterClick = () => {
+    // TODO: open a filter menu / toggle a role filter (OWNER, EMPLOYEE)
+  };
+
+  // Called when the edit (pencil) button of a row is clicked
+  const handleEdit = (user: User) => {
+    // TODO: e.g. router.push(`/dashboard/users/${user.id}/edit`)
+  
+    
+  
+  
+  };
+
+  // Called when the delete (trash) button of a row is clicked
+  const handleDelete = async (user: User) => {
+    // TODO: confirm, send DELETE request to the API, then remove the user from state
+    
+  
+  };
 
 
 return (
@@ -127,12 +154,14 @@ return (
           <input
             type="text"
             placeholder="Search by name, email or username..."
+            onChange={handleSearchChange}
             className="w-full bg-transparent text-sm outline-none placeholder:text-slate-500"
           />
         </div>
 
         <button
           type="button"
+          onClick={handleFilterClick}
           className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-700 px-4 py-3 text-sm text-slate-300 transition hover:bg-slate-800"
         >
           <ListFilter size={18} />
@@ -211,6 +240,7 @@ return (
                         <button
                           type="button"
                           aria-label={`Edit ${user.username}`}
+                          onClick={() => handleEdit(user)}
                           className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-amber-400"
                         >
                           <Pencil size={17} />
@@ -218,6 +248,7 @@ return (
                         <button
                           type="button"
                           aria-label={`Delete ${user.username}`}
+                          onClick={() => handleDelete(user)}
                           className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-red-400"
                         >
                           <Trash2 size={17} />

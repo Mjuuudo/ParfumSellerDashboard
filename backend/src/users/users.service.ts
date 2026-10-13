@@ -46,11 +46,31 @@ export class UserService{
     async getAllUsers () {
         const users = await db.orm.public.User.all();
 
+        
         if (!users) {
             throw new NotFoundException('No Users Found !');
         }
 
         return users;
+    }
+
+    async deleteUser (userId: number) {
+        const user = await db.orm.public.User.where(
+            {
+                id: userId
+            }
+        ).update({
+            isActive: false,
+
+        });
+
+        if ( !user )
+            throw new NotFoundException(`Internal Server Error !`);
+
+        const {passwordHash: _passwordHash, ...userWithoutPassword} = user;
+
+        return userWithoutPassword;
+
     }
 
 
