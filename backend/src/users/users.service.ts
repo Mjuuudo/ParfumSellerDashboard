@@ -4,6 +4,7 @@ import bcrypt from "bcrypt"
 import { UserCreationDto } from "./dto/create-user.dto.js";
 import { UnauthorizedException } from "@nestjs/common";
 import { NotFoundException } from "@nestjs/common";
+import { UserModificationDto } from "./dto/user-modification.dto.js";
 
 
 @Injectable()
@@ -52,6 +53,42 @@ export class UserService{
         }
 
         return users;
+    }
+
+    async changePassword ( id: number, newPassword: string ) {
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        const user = await db.orm.public.User.where({id: id})
+            .update({
+                passwordHash: hashedPassword
+            });
+
+        return user;
+    }
+
+    async modifyUser ( data: UserModificationDto ) {
+        const checkExistance = await db.orm.public.User.where({id: data.id}).first();
+        if (!checkExistance)
+                throw new NotFoundException(`user With Id ${data.id} Not Found !`);
+
+        const updatedUser = {
+            ...(data.firstName !== undefined && {
+                firstName: data.firstName
+            }),
+            ...(data.lastName !== undefined && {
+                lastName: data.lastName
+            }),
+            ...(data.email !== undefined && {
+                email: data.email
+            }),
+            ...(data.phoneNumber !== undefined && {
+                phoneNumber: data.phoneNumber
+            }),
+            ...(data.role !== undefined && {
+                role: data.role
+            })
+        }
+        await db.orm.public.User.where({id: data.id})
+                    .update(updatedUser);
     }
 
     async deleteUser (userId: number) {

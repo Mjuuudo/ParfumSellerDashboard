@@ -80,7 +80,11 @@ export default function UsersPage() {
   const handleEdit = (user: User) => {
     // TODO: e.g. router.push(`/dashboard/users/${user.id}/edit`)
   
-    
+    if (typeof user.id !== 'number')
+        return ;
+
+
+    router.push(`/dashboard/users/${user.id}/edit`)
   
   
   };
@@ -186,6 +190,7 @@ return (
                 <th className="px-6 py-4 font-medium">Username</th>
                 <th className="px-6 py-4 font-medium">Role</th>
                 <th className="px-6 py-4 font-medium">Last Login</th>
+                <th className="px-6 py-4 font-medium">Status</th>
                 <th className="px-6 py-4 text-right font-medium">Actions</th>
               </tr>
             </thead>
@@ -234,6 +239,21 @@ return (
                         ? new Date(user.lastLoginAt).toLocaleString()
                         : "Never"}
                     </td>
+
+                    
+                    
+                    <td className="px-6 py-4">
+                      <span
+                        className={
+                          user.isActive
+                            ? "rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-medium text-emerald-400"
+                            : "rounded-full bg-red-500/15 px-3 py-1 text-xs font-medium text-red-400"
+                        }
+                      >
+                        {user.isActive ? "Active" : "Inactive"}
+                      </span>
+                    </td>
+
 
                     <td className="px-6 py-4">
                       <div className="flex justify-end gap-2">

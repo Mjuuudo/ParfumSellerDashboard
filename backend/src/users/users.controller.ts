@@ -1,9 +1,12 @@
-import { Body, Controller, Post, Get, Req, Res, Delete, Param, ParseIntPipe     } from "@nestjs/common";
+import { Body, Controller, Post, Get, Req, Res, Delete, Param, ParseIntPipe,
+    Patch
+     } from "@nestjs/common";
 import { UserCreationDto } from "./dto/create-user.dto.js";
 import { UserService } from "./users.service.js";
 import { AuthGuard } from "../Auth/auth.guard.js";
 import { UseGuards } from "@nestjs/common";
 import { RolesGuard } from "../Auth/roles.guard.js";
+import { UserModificationDto } from "./dto/user-modification.dto.js";
 
 @Controller("/api/user")
 export class UserController{
@@ -16,6 +19,7 @@ export class UserController{
     // Requires a logged-in user; the password hash is stripped from the response.
     @Post()
     @UseGuards(AuthGuard)
+    @UseGuards(RolesGuard)
     async createUser ( @Body() body: UserCreationDto ) {
         
         const user = await this.userServices.createUser(body);
@@ -24,6 +28,23 @@ export class UserController{
 
         return createdUser;
 
+    }
+
+    @Post('changePassword')
+    async changePassword( @Body()  data: {id: string, password: string} ) {
+        
+
+        return await this.userServices.changePassword(Number(data.id), data.password);
+    }
+
+    @Patch('/modify')
+    async modifyUser (@Body() data: UserModificationDto) {
+        const user = await this.userServices.modifyUser(data);
+        if (data.password && typeof data.id !== undefined)
+            await this.userServices.changePassword(Number(data.id), data.password);
+        
+
+        return user;
     }
 
 
@@ -57,6 +78,17 @@ export class UserController{
         return usersWithoutPasswords;
     }
 
+
+    @Get(':id')
+    @UseGuards(AuthGuard)
+    @UseGuards(RolesGuard)
+    async getSpeceficUser ( @Param('id', ParseIntPipe) id: number  ) {
+
+        return await this.userServices.getUserById(id);
+    }
+
+
+
     // DELETE /api/user/:id — soft-deletes a user by setting isActive to false.
     // The row stays in the database; owner-only check is currently commented out.
     @Delete(':id')
@@ -76,7 +108,6 @@ export class UserController{
     @Get('isAuth')
     @UseGuards(AuthGuard)
     isAuth () {
-        console.log(`[AUTH GUARD] Checking If The User Is LoggedIn !`);
 
 
         return {
@@ -90,7 +121,6 @@ export class UserController{
     @UseGuards(AuthGuard)
     @UseGuards(RolesGuard)
     isOwner () {
-        console.log(`[AUTH GUARD] Checking If The User Is Owner !`);
 
         return {
             message: "Authorized !"

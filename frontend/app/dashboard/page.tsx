@@ -139,7 +139,7 @@ export default function DashboardPage() {
                 <Link
                   key={item.title}
                   href={item.href}
-                  className="group flex items-center gap-4 rounded-xl border border-slate-800 bg-slate-900 p-5 transition hover:border-amber-500/50 hover:bg-slate-800"
+                  className="group flex items-center gap-4 rounded-xl cursor-pointer border border-slate-800 bg-slate-900 p-5 transition hover:border-amber-500/50 hover:bg-slate-800"
                 >
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400 transition group-hover:bg-amber-500/20">
                     <Icon size={24} />
