@@ -42,9 +42,13 @@ export class UserController{
         const user = await this.userServices.modifyUser(data);
         if (data.password && typeof data.id !== undefined)
             await this.userServices.changePassword(Number(data.id), data.password);
+
+        if (!user)
+            throw new Error(`Check The Modify Controller`);
+        const { passwordHash: _passwordHash, ...userWithoutPassword } = user;
         
 
-        return user;
+        return userWithoutPassword;
     }
 
 

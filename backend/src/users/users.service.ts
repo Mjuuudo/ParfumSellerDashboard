@@ -10,11 +10,9 @@ import { UserModificationDto } from "./dto/user-modification.dto.js";
 @Injectable()
 export class UserService{
 
-
     constructor ( 
         
     ) { }
-
 
     async createUser ( data: UserCreationDto ) {
 
@@ -87,9 +85,13 @@ export class UserService{
                 role: data.role
             })
         }
-        await db.orm.public.User.where({id: data.id})
+         await db.orm.public.User.where({id: data.id})
                     .update(updatedUser);
-    }
+    
+    
+        return await db.orm.public.User.where({id: data.id})
+                    .first();
+        }
 
     async deleteUser (userId: number) {
         const user = await db.orm.public.User.where(
