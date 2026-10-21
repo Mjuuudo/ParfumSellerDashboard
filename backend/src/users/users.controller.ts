@@ -30,6 +30,7 @@ export class UserController{
 
     }
 
+
     @Post('changePassword')
     async changePassword( @Body()  data: {id: string, password: string} ) {
         
@@ -37,7 +38,8 @@ export class UserController{
         return await this.userServices.changePassword(Number(data.id), data.password);
     }
 
-    @Patch('/modify')
+    
+    @Patch(':id')
     async modifyUser (@Body() data: UserModificationDto) {
         const user = await this.userServices.modifyUser(data);
         if (data.password && typeof data.id !== undefined)

@@ -1,3 +1,5 @@
+"use client"
+
 
 import Link from "next/link";
 import {
@@ -7,7 +9,9 @@ import {
   ChartNoAxesCombined,
   UserRound,
   ArrowUpRight,
+  LogOut,
 } from "lucide-react";
+import { useRouter } from "next/navigation"
 
 const dashboardStats = [
   {
@@ -52,6 +56,27 @@ const quickLinks = [
 ];
 
 export default function DashboardPage() {
+
+  const router = useRouter();
+
+  async function handleLogout( ) {
+    const data = await fetch('http://localhost:8000/api/auth/logout', {
+      method: 'post',
+      credentials: 'include',
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+
+    if (!data.ok) {
+      alert('Logout Opperation Not Success !')
+      return ;
+    }
+
+    router.push('/login');
+  }
+
+
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100">
       {/* Top navigation */}
@@ -66,13 +91,26 @@ export default function DashboardPage() {
             </p>
           </div>
 
+         <div className="flex items-center gap-3">
           <Link
             href="/dashboard/profile"
             aria-label="View profile"
-            className="flex h-11 w-11 items-center justify-center rounded-full border border-slate-700 bg-slate-800 text-amber-400 transition hover:border-amber-500"
+            title="Profile"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-slate-700 bg-slate-800 text-amber-400 transition hover:border-amber-500 hover:bg-slate-700"
           >
             <UserRound size={21} />
           </Link>
+
+          <button
+            type="button"
+            aria-label="Log out"
+            title="Log out"
+            className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-slate-700 bg-slate-800 text-slate-300 transition hover:border-red-500/60 hover:bg-red-500/10 hover:text-red-400"
+            onClick={handleLogout}
+          >
+            <LogOut size={21} />
+          </button>
+        </div>
         </div>
       </header>
 
