@@ -6,13 +6,20 @@ import { useEffect, useState } from "react";
 import { ChevronRight, Menu } from "lucide-react";
 import Sidebar from "./Sidebar";
 
-// Labels for each URL segment in the breadcrumb. Numeric segments (user ids) are handled separately.
+// Labels for each URL segment in the breadcrumb. "create" and numeric ids are handled
+// separately because their label depends on the section they are in (users, brands...).
 const segmentLabels: Record<string, string> = {
   dashboard: "Dashboard",
   users: "User Management",
-  create: "Create User",
+  brands: "Brands",
   profile: "Profile",
   edit: "Edit",
+};
+
+// Singular name of each section, used for "Create User" / "Add Brand" and "User #5" / "Brand #5".
+const sectionEntities: Record<string, { name: string; createLabel: string }> = {
+  users: { name: "User", createLabel: "Create User" },
+  brands: { name: "Brand", createLabel: "Add Brand" },
 };
 
 // Only these paths have a page, so only these crumbs are rendered as links
@@ -21,6 +28,8 @@ const linkablePaths = new Set([
   "/dashboard",
   "/dashboard/users",
   "/dashboard/users/create",
+  "/dashboard/brands",
+  "/dashboard/brands/create",
   "/dashboard/profile",
 ]);
 
@@ -29,9 +38,12 @@ function buildBreadcrumb(pathname: string) {
 
   return segments.map((segment, index) => {
     const href = `/${segments.slice(0, index + 1).join("/")}`;
+    const entity = sectionEntities[segments[index - 1]];
     const label = /^\d+$/.test(segment)
-      ? `User #${segment}`
-      : segmentLabels[segment] ?? segment;
+      ? `${entity?.name ?? "Item"} #${segment}`
+      : segment === "create"
+        ? entity?.createLabel ?? "Create"
+        : segmentLabels[segment] ?? segment;
     const isLast = index === segments.length - 1;
 
     return { href, label, isLink: !isLast && linkablePaths.has(href) };
