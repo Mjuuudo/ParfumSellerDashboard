@@ -26,7 +26,7 @@ export class UserService{
             email: data.email,
             phoneNumber: data.phoneNumber,
             passwordHash: hashedPassword,
-            Role: data.role
+            Role: data.Role
         };
 
         return await db.orm.public.User.create(user);
@@ -54,6 +54,10 @@ export class UserService{
     }
 
     async changePassword ( id: number, newPassword: string ) {
+        
+        console.log(`${id} : ${newPassword}`);
+
+        
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         const user = await db.orm.public.User.where({id: id})
             .update({
@@ -81,8 +85,8 @@ export class UserService{
             ...(data.phoneNumber !== undefined && {
                 phoneNumber: data.phoneNumber
             }),
-            ...(data.role !== undefined && {
-                role: data.role
+            ...(data.Role !== undefined && {
+                Role: data.Role
             })
         }
          await db.orm.public.User.where({id: data.id})

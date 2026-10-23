@@ -13,6 +13,8 @@ export class AuthController {
 
 
 
+    // POST /api/auth/login — checks the credentials and returns the logged-in user.
+    // The JWT is stored in an httpOnly "access_token" cookie, not returned in the body.
     @HttpCode(HttpStatus.OK)
     @Post('/login')
     async login(@Body() data: UserLoginDto, @Res({passthrough: true}) response: Response) {
@@ -34,6 +36,7 @@ export class AuthController {
         return loginObject.user;
     }
 
+    // POST /api/auth/logout — logs the user out by clearing the "access_token" cookie.
     @Post('logout')
     async logout( @Res({ passthrough: true}) response:Response) {
 

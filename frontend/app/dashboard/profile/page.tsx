@@ -17,6 +17,28 @@ export default function ProfilePage() {
     const [userData, setUserData] = useState<UserData | null>(null);
     const router = useRouter();
 
+
+    async function handleProfileModification( ) {
+
+      router.push(`/dashboard/users/${userData?.id}/edit`);
+    }
+    async function handleLogout ( ) {
+        const data = await fetch('http://localhost:8000/api/auth/logout', {
+        method: 'post',
+        credentials: 'include',
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!data.ok) {
+        alert('Logout Opperation Not Success !')
+        return ;
+      }
+
+      router.push('/login');
+    }
+
     useEffect(() => {
         async function fetchUserData () {
             const response = await fetch ("http://localhost:8000/api/user/me", {
@@ -172,13 +194,15 @@ export default function ProfilePage() {
             <button
               type="button"
               className="rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-medium transition hover:border-amber-400/40 hover:bg-white/10"
+              onClick={handleProfileModification}
             >
               Edit Profile
             </button>
 
             <button
               type="button"
-              className="rounded-xl border border-red-400/20 bg-red-400/5 px-5 py-3 text-sm font-medium text-red-300 transition hover:bg-red-400/10"
+              className="rounded-xl border cursor-pointer border-red-400/20 bg-red-400/5 px-5 py-3 text-sm font-medium text-red-300 transition hover:bg-red-400/10"
+              onClick={handleLogout}
             >
               Logout
             </button>

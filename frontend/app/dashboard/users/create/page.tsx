@@ -24,7 +24,7 @@ export default function CreateUserPage() {
   useEffect(() => {
   const checkOwner = async () => {
     const response = await fetch("http://localhost:8000/api/user/isOwner", {
-      method: "GET",
+      method: "get",
       credentials: "include",
     });
 
@@ -39,6 +39,7 @@ export default function CreateUserPage() {
     }
 
     if (!response.ok) {
+      alert(`Problem Was Detected ${response.status}`)
       router.push("/login");
     }
   };
@@ -59,7 +60,7 @@ export default function CreateUserPage() {
       phoneNumber: formData.get("phoneNumber") as string,
       username: formData.get("username") as string,
       password: formData.get("password") as string,
-      role: formData.get("role") as "OWNER" | "EMPLOYEE",
+      Role: formData.get("role") as "OWNER" | "EMPLOYEE",
     };
     console.log(`Data Collected !`);
     // TODO: send `newUser` to the backend

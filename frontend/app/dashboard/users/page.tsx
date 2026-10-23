@@ -42,7 +42,6 @@ export default function UsersPage() {
           credentials: "include",
         });
 
-        console.log(response.status);
         if (response.status === 401){
           router.push('/login')
         }else if ( response.status === 403 ) {

@@ -16,7 +16,7 @@ export class UserController{
     ) {}
 
     // POST /api/user — creates a new user from the request body.
-    // Requires a logged-in user; the password hash is stripped from the response.
+    // Owner only (AuthGuard + RolesGuard); the password hash is stripped from the response.
     @Post()
     @UseGuards(AuthGuard)
     @UseGuards(RolesGuard)
@@ -31,6 +31,8 @@ export class UserController{
     }
 
 
+    // POST /api/user/changePassword — sets a new password for the user with the given id.
+    // Expects { id, password } in the body; no guard, so it is currently open to anyone.
     @Post('changePassword')
     async changePassword( @Body()  data: {id: string, password: string} ) {
         
@@ -38,12 +40,16 @@ export class UserController{
         return await this.userServices.changePassword(Number(data.id), data.password);
     }
 
-    
+
+    // PATCH /api/user/:id — updates only the fields sent in the body (partial update).
+    // Changes the password too if one is sent; returns the updated user without its hash.
     @Patch(':id')
-    async modifyUser (@Body() data: UserModificationDto) {
+    async modifyUser (@Param('id', ParseIntPipe) id: number ,@Body() data: UserModificationDto) {
+
+        console.log(data);
         const user = await this.userServices.modifyUser(data);
-        if (data.password && typeof data.id !== undefined)
-            await this.userServices.changePassword(Number(data.id), data.password);
+        if (data.password )
+            await this.userServices.changePassword(id, data.password);
 
         if (!user)
             throw new Error(`Check The Modify Controller`);
@@ -69,12 +75,11 @@ export class UserController{
     }
 
     // GET /api/user/all — returns the list of all users, without their password hashes.
-    // Requires a logged-in user (owner-only check is currently commented out).
+    // Owner only (AuthGuard + RolesGuard).
     @Get('all')
     @UseGuards(AuthGuard)
     @UseGuards(RolesGuard)
     async getAllUsers() {
-        console.log(`heeeeeer`)
         const users = await this.userServices.getAllUsers();
         const usersWithoutPasswords = users.map((user) => {
             const { passwordHash, ...userWithoutPassword } = user;
@@ -84,32 +89,19 @@ export class UserController{
         return usersWithoutPasswords;
     }
 
-
-    @Get(':id')
+     // GET /api/user/isOwner — lets the frontend check whether the user has the owner role.
+    // Used to protect owner-only pages (e.g. user creation); RolesGuard does the check.
+    @Get('isOwner')
     @UseGuards(AuthGuard)
     @UseGuards(RolesGuard)
-    async getSpeceficUser ( @Param('id', ParseIntPipe) id: number  ) {
+    async isOwner (@Req() request: Request) {
 
-        return await this.userServices.getUserById(id);
+        return {
+            message: "Authorized !"
+        };
     }
 
-
-
-    // DELETE /api/user/:id — soft-deletes a user by setting isActive to false.
-    // The row stays in the database; owner-only check is currently commented out.
-    @Delete(':id')
-    @UseGuards(AuthGuard)
-    @UseGuards(RolesGuard)
-    async deactivateUser(@Param('id', ParseIntPipe) id: number) {
-        const user = await this.userServices.deleteUser(Number(id));
-
-
-        return user;
-    }
-
-
-
-    // GET /api/user/isAuth — lets the frontend check whether the user is logged in.
+     // GET /api/user/isAuth — lets the frontend check whether the user is logged in.
     // Returns "Authorized !" if AuthGuard passes, otherwise the guard rejects the request.
     @Get('isAuth')
     @UseGuards(AuthGuard)
@@ -121,17 +113,30 @@ export class UserController{
         };
     }
 
-    // GET /api/user/isOwner — lets the frontend check whether the user has the owner role.
-    // Used to protect owner-only pages (e.g. user creation); RolesGuard does the check.
-    @Get('isOwner')
+
+
+    // GET /api/user/:id — returns one user by id (used by the edit user page).
+    // Owner only; must stay below the fixed GET routes or it would catch them.
+    @Get(':id')
     @UseGuards(AuthGuard)
     @UseGuards(RolesGuard)
-    isOwner () {
+    async getSpeceficUser ( @Param('id', ParseIntPipe) id: number  ) {
 
-        return {
-            message: "Authorized !"
-        };
+        return await this.userServices.getUserById(id);
     }
 
+
+
+    // DELETE /api/user/:id — soft-deletes a user by setting isActive to false.
+    // Owner only; the row stays in the database so the account can be restored.
+    @Delete(':id')
+    @UseGuards(AuthGuard)
+    @UseGuards(RolesGuard)
+    async deactivateUser(@Param('id', ParseIntPipe) id: number) {
+        const user = await this.userServices.deleteUser(Number(id));
+
+
+        return user;
+    }
 
 }
