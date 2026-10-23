@@ -1,7 +1,6 @@
 
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -71,20 +70,11 @@ export default function ProfilePage() {
 
     
   return (
-    <main className="min-h-screen bg-[#0B1120] px-5 py-8 text-white sm:px-8">
+    <div>
       <div className="mx-auto max-w-4xl">
 
-        {/* Back to dashboard */}
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-2 text-sm text-slate-400 transition hover:text-amber-400"
-        >
-          <span>←</span>
-          Back to dashboard
-        </Link>
-
-        {/* Page Header */}
-        <header className="mb-8 mt-8">
+        {/* Page Header ("Back to dashboard" is now covered by the sidebar and breadcrumb) */}
+        <header className="mb-8">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-400">
             Account settings
           </p>
@@ -99,7 +89,7 @@ export default function ProfilePage() {
         </header>
 
         {/* Profile Card */}
-        <section className="overflow-hidden rounded-2xl border border-white/10 bg-[#111B2C]">
+        <section className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
 
           {/* Banner */}
           <div className="h-28 bg-gradient-to-r from-amber-300 via-amber-600 to-slate-800" />
@@ -107,7 +97,7 @@ export default function ProfilePage() {
           <div className="px-6 pb-7 sm:px-8">
 
             {/* Avatar placeholder */}
-            <div className="-mt-10 flex h-20 w-20 items-center justify-center rounded-2xl border-4 border-[#111B2C] bg-amber-400 text-3xl font-bold text-slate-950">
+            <div className="-mt-10 flex h-20 w-20 items-center justify-center rounded-2xl border-4 border-slate-900 bg-amber-400 text-3xl font-bold text-slate-950">
               U
             </div>
 
@@ -128,7 +118,7 @@ export default function ProfilePage() {
         </section>
 
         {/* Personal Information */}
-        <section className="mt-6 rounded-2xl border border-white/10 bg-[#111B2C] p-6 sm:p-8">
+        <section className="mt-6 rounded-2xl border border-slate-800 bg-slate-900 p-6 sm:p-8">
 
           <div>
             <h3 className="text-lg font-semibold">
@@ -140,7 +130,7 @@ export default function ProfilePage() {
             </p>
           </div>
 
-          <div className="mt-6 divide-y divide-white/[0.08]">
+          <div className="mt-6 divide-y divide-slate-800">
 
             {/* Username */}
             <div className="flex flex-col gap-2 py-4 sm:flex-row sm:items-center sm:justify-between">
@@ -179,7 +169,7 @@ export default function ProfilePage() {
         </section>
 
         {/* Account Actions */}
-        <section className="mt-6 rounded-2xl border border-white/10 bg-[#111B2C] p-6 sm:p-8">
+        <section className="mt-6 rounded-2xl border border-slate-800 bg-slate-900 p-6 sm:p-8">
 
           <h3 className="text-lg font-semibold">
             Account Actions
@@ -193,7 +183,7 @@ export default function ProfilePage() {
 
             <button
               type="button"
-              className="rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-medium transition hover:border-amber-400/40 hover:bg-white/10"
+              className="rounded-xl border border-slate-700 bg-slate-800 px-5 py-3 text-sm font-medium transition hover:border-amber-400/40 hover:bg-slate-700"
               onClick={handleProfileModification}
             >
               Edit Profile
@@ -211,6 +201,6 @@ export default function ProfilePage() {
         </section>
 
       </div>
-    </main>
+    </div>
   );
 }

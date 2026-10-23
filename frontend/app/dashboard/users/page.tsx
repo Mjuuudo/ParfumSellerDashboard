@@ -8,7 +8,6 @@ import {
   Pencil,
   Trash2,
   Users as UsersIcon,
-  ArrowLeft,
 } from "lucide-react";
 
 
@@ -97,18 +96,10 @@ export default function UsersPage() {
 
 
 return (
-    <div className="min-h-screen space-y-8 bg-slate-950 p-6 text-slate-100 md:p-10">
-      {/* Heading */}
+    <div className="space-y-8">
+      {/* Heading ("Back to Dashboard" is now covered by the sidebar and breadcrumb) */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <Link
-            href="/dashboard"
-            className="mb-4 inline-flex items-center gap-2 text-sm text-slate-400 transition hover:text-amber-400"
-          >
-            <ArrowLeft size={17} />
-            Back to Dashboard
-          </Link>
-
           <h1 className="text-3xl font-bold tracking-tight">
             User Management
           </h1>

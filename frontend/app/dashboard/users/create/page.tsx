@@ -87,7 +87,7 @@ export default function CreateUserPage() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-950 p-6 text-slate-100 md:p-10">
+    <div>
       <div className="mx-auto max-w-3xl space-y-8">
         {/* Navigation */}
         <div>
@@ -283,6 +283,6 @@ export default function CreateUserPage() {
           </div>
         </form>
       </div>
-    </main>
+    </div>
   );
 }

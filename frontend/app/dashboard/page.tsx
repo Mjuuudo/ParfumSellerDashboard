@@ -7,11 +7,8 @@ import {
   Package,
   ShoppingCart,
   ChartNoAxesCombined,
-  UserRound,
   ArrowUpRight,
-  LogOut,
 } from "lucide-react";
-import { useRouter } from "next/navigation"
 
 const dashboardStats = [
   {
@@ -57,72 +54,17 @@ const quickLinks = [
 
 export default function DashboardPage() {
 
-  const router = useRouter();
-
-  async function handleLogout( ) {
-    const data = await fetch('http://localhost:8000/api/auth/logout', {
-      method: 'post',
-      credentials: 'include',
-      headers: {
-        "Content-Type": "application/json"
-      }
-    });
-
-    if (!data.ok) {
-      alert('Logout Opperation Not Success !')
-      return ;
-    }
-
-    router.push('/login');
-  }
-
-
+  // The top navigation (brand, profile link, logout) moved to the shared sidebar in ./_components/Sidebar.tsx.
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100">
-      {/* Top navigation */}
-      <header className="border-b border-slate-800 bg-slate-900/80">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
-          <div>
-            <h1 className="text-xl font-bold tracking-wide">
-              Parfum<span className="text-amber-400">Seller</span>
-            </h1>
-            <p className="mt-1 text-xs text-slate-400">
-              Business Dashboard
-            </p>
-          </div>
-
-         <div className="flex items-center gap-3">
-          <Link
-            href="/dashboard/profile"
-            aria-label="View profile"
-            title="Profile"
-            className="flex h-11 w-11 items-center justify-center rounded-full border border-slate-700 bg-slate-800 text-amber-400 transition hover:border-amber-500 hover:bg-slate-700"
-          >
-            <UserRound size={21} />
-          </Link>
-
-          <button
-            type="button"
-            aria-label="Log out"
-            title="Log out"
-            className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-slate-700 bg-slate-800 text-slate-300 transition hover:border-red-500/60 hover:bg-red-500/10 hover:text-red-400"
-            onClick={handleLogout}
-          >
-            <LogOut size={21} />
-          </button>
-        </div>
-        </div>
-      </header>
-
-      <div className="mx-auto max-w-7xl space-y-10 px-6 py-10">
+      <div className="space-y-10">
         {/* Welcome section */}
         <section>
           <p className="text-sm font-medium text-amber-400">
             OVERVIEW
           </p>
-          <h2 className="mt-2 text-3xl font-bold tracking-tight">
+          <h1 className="mt-2 text-3xl font-bold tracking-tight">
             Dashboard
-          </h2>
+          </h1>
           <p className="mt-2 text-slate-400">
             Welcome back. Here’s an overview of your business.
           </p>
@@ -207,6 +149,5 @@ export default function DashboardPage() {
           ParfumSeller Dashboard
         </footer>
       </div>
-    </main>
   );
 }

@@ -115,13 +115,13 @@ export default function EditUserPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 px-4 py-8 text-slate-100 sm:px-8">
+    <div>
       <div className="mx-auto max-w-5xl space-y-8">
-        {/* Header */}
+        {/* Header (the full path is shown in the layout breadcrumb) */}
         <header className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
           <div>
             <p className="text-sm font-semibold tracking-widest text-amber-400">
-              DASHBOARD / USERS / EDIT
+              USER MANAGEMENT
             </p>
             <h1 className="mt-2 text-3xl font-bold tracking-tight">
               Edit User
@@ -374,6 +374,6 @@ export default function EditUserPage() {
           </>
         )}
       </div>
-    </main>
+    </div>
   );
 }
