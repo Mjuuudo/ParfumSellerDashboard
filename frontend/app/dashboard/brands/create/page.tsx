@@ -4,8 +4,12 @@ import Link from "next/link";
 import type { FormEvent } from "react";
 import { ArrowLeft, Tags } from "lucide-react";
 import BrandForm from "../_components/BrandForm";
+import { useRouter } from "next/navigation"
 
 export default function CreateBrandPage() {
+
+  const router =  useRouter();
+
 
   async function handleCreateBrand(event: FormEvent<HTMLFormElement>) {
     // Stops the browser from reloading the page on submit. Keep this line.
@@ -14,6 +18,32 @@ export default function CreateBrandPage() {
     // TODO(you): read "name" and "image" with new FormData(event.currentTarget),
     // send them to the backend, handle errors (409 = name already exists),
     // then router.push("/dashboard/brands") on success.
+
+    const formData = new FormData(event.currentTarget);
+    
+    const name = formData.get("name");
+
+
+    const sendedObject = {
+      name: name
+    }
+
+    const data = await fetch("http://localhost:8000/api/brand", {
+      method: "post",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(sendedObject),
+    });
+
+    if (!data.ok) {
+      alert(`Problem While Creating The Brand ${data.status}!`)
+      return ;
+    }
+
+    router.replace('/dashboard/brands')
+    return ;
   }
 
   return (

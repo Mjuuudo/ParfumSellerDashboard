@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { FormEvent } from "react";
-import { ImageIcon, Save, Tag, Plus } from "lucide-react";
+import { ImageIcon, Save, Tag, Plus, CircleCheck, CircleOff } from "lucide-react";
 import type { Brand } from "./brand";
 import BrandAvatar from "./BrandAvatar";
 
@@ -90,20 +90,51 @@ export default function BrandForm({ mode, brand, onSubmit }: BrandFormProps) {
             </p>
           </div>
 
-          <div className="max-w-xs space-y-2">
-            <label htmlFor="isActive" className="text-sm font-medium text-slate-300">
-              Status
-            </label>
-            <select
-              id="isActive"
-              name="isActive"
-              defaultValue={String(brand?.isActive ?? true)}
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm outline-none focus:border-amber-400"
-            >
-              <option value="true">Active</option>
-              <option value="false">Inactive</option>
-            </select>
-          </div>
+          {/* Two radio cards sharing name="isActive": FormData gives "true" or "false",
+              exactly like the old <select>. The highlight comes from CSS (has-[:checked]), no state needed. */}
+          <fieldset>
+            <legend className="mb-3 text-sm font-medium text-slate-300">Status</legend>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-700 bg-slate-950 p-4 transition hover:border-slate-600 has-[:checked]:border-emerald-500/60 has-[:checked]:bg-emerald-500/10">
+                <input
+                  type="radio"
+                  name="isActive"
+                  value="true"
+                  defaultChecked={brand?.isActive ?? true}
+                  className="mt-0.5 accent-emerald-500"
+                />
+                <span>
+                  <span className="flex items-center gap-2 text-sm font-semibold text-emerald-400">
+                    <CircleCheck size={16} />
+                    Active
+                  </span>
+                  <span className="mt-1 block text-xs text-slate-400">
+                    Visible in the catalog and available for new perfumes.
+                  </span>
+                </span>
+              </label>
+
+              <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-700 bg-slate-950 p-4 transition hover:border-slate-600 has-[:checked]:border-red-500/60 has-[:checked]:bg-red-500/10">
+                <input
+                  type="radio"
+                  name="isActive"
+                  value="false"
+                  defaultChecked={brand ? !brand.isActive : false}
+                  className="mt-0.5 accent-red-500"
+                />
+                <span>
+                  <span className="flex items-center gap-2 text-sm font-semibold text-red-400">
+                    <CircleOff size={16} />
+                    Inactive
+                  </span>
+                  <span className="mt-1 block text-xs text-slate-400">
+                    Hidden from the catalog. Existing perfumes are kept.
+                  </span>
+                </span>
+              </label>
+            </div>
+          </fieldset>
         </section>
       )}
 

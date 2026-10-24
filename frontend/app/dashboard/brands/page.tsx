@@ -13,6 +13,8 @@ export default function BrandsPage() {
   // Also add loading/error state and pick the matching component from ./_components/BrandStates.
   const brands: Brand[] = [];
 
+  // useEffect()
+
   return (
     <div className="space-y-8">
       {/* Heading */}
