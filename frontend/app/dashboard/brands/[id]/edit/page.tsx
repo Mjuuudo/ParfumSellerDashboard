@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import type { FormEvent } from "react";
 import { ArrowLeft } from "lucide-react";
 import BrandForm from "../../_components/BrandForm";
@@ -9,6 +9,7 @@ import BrandForm from "../../_components/BrandForm";
 export default function EditBrandPage() {
   const params = useParams<{ id: string }>();
   const id = params.id;
+  const router = useRouter();
 
   // TODO(you): fetch the brand with this id in a useEffect, keep it in state, and
   // pass it to <BrandForm brand={...} /> so the fields are pre-filled.
@@ -18,8 +19,39 @@ export default function EditBrandPage() {
     // Stops the browser from reloading the page on submit. Keep this line.
     event.preventDefault();
 
+    const formData = new FormData(event.currentTarget);
+
+    const updatedObject = {
+      ...(formData.get("name") !== "" && {
+        name: formData.get("name")
+      }),
+      ...(formData.get("isActive") === "true" && {
+        isActive: true
+      }),
+      ...(formData.get("isActive") === "false" && {
+        isActive: false
+      }),
+    };
+
     // TODO(you): read the fields with new FormData(event.currentTarget), send only
     // what changed to the backend, handle errors, then go back to /dashboard/brands.
+    const data = await fetch(`http://localhost:8000/api/brand/${id}`, {
+      method: "PATCH",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(updatedObject),
+    })
+
+    console.log(updatedObject);
+    if (!data.ok) {
+      alert (`AN Error Occured While Modifying Data ${data.status}`);
+      return
+    }
+    
+    router.push("/dashboard/brands");
+    return 
   }
 
   return (

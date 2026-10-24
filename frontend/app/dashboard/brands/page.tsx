@@ -5,15 +5,37 @@ import { Plus, Search, Pencil, Power, Tags } from "lucide-react";
 import type { Brand } from "./_components/brand";
 import BrandAvatar from "./_components/BrandAvatar";
 import { BrandsEmpty } from "./_components/BrandStates";
+import { useEffect, useState } from "react"
 
 export default function BrandsPage() {
 
   // TODO(you): replace this with state (useState<Brand[]>) and fill it from
   // the brands endpoint we'll build together, in a useEffect — same pattern as app/dashboard/users/page.tsx.
   // Also add loading/error state and pick the matching component from ./_components/BrandStates.
-  const brands: Brand[] = [];
+  const [brands, setBrands] = useState<Brand[]>([]);
+
 
   // useEffect()
+  useEffect(() => {
+    const fetchItems = async ( ) => {
+      const data = await fetch("http://localhost:8000/api/brand", {
+        method: "get",
+        credentials: "include",
+
+      });
+
+      if (!data.ok) {
+        alert("Error While Fetching Data !");
+      }
+
+      const Brands = await data.json();
+      setBrands(Brands);
+
+    }
+
+    fetchItems()
+  }, [])
+
 
   return (
     <div className="space-y-8">
