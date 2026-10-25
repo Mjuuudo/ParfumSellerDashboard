@@ -61,7 +61,7 @@ export class BrandService {
 
         const updatedObject = {
             ...(data.name !== undefined && {
-                name: data.name
+                name: data.name,
             }),
             ...(data.isActive !== undefined && {
                 isActive: data.isActive,

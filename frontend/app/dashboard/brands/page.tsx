@@ -37,6 +37,45 @@ export default function BrandsPage() {
   }, [])
 
 
+  // Called when the on/off (Power) button of a brand is clicked, in the table or on a mobile card.
+  // `brand` is the brand of the row that was clicked.
+  const handleToggleStatus = async (brand: Brand) => {
+    // TODO(you):
+    // 1. Send a PATCH to /api/brand/${brand.id} with the opposite of brand.isActive (a real boolean).
+    // 2. If the response is not ok, alert and stop.
+    // 3. Update that one brand in `brands` with setBrands, so the badge changes without a reload.
+  
+    const updatedStatus = {
+      ...(brand.isActive === true && {
+        isActive: false,
+      }),
+      ...(brand.isActive === false && {
+        isActive: true,
+      }),
+
+    }
+
+    console.log(updatedStatus);
+    console.log(brand.id);
+    const data = await fetch(`http://localhost:8000/api/brand/${brand.id}`, {
+      method: "PATCH",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(updatedStatus)
+    });
+
+
+    if ( !data.ok ) {
+      alert (`error while Modifying Status ${data.status}`);
+      return ;
+    }
+
+    return ;
+  };
+
+
   return (
     <div className="space-y-8">
       {/* Heading */}
@@ -135,7 +174,7 @@ export default function BrandsPage() {
                       {new Date(brand.updatedAt).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4">
-                      <BrandActions brand={brand} />
+                      <BrandActions brand={brand} onToggleStatus={handleToggleStatus} />
                     </td>
                   </tr>
                 ))}
@@ -153,7 +192,7 @@ export default function BrandsPage() {
                       <StatusBadge isActive={brand.isActive} />
                     </div>
                   </div>
-                  <BrandActions brand={brand} />
+                  <BrandActions brand={brand} onToggleStatus={handleToggleStatus} />
                 </li>
               ))}
             </ul>
@@ -183,7 +222,13 @@ function StatusBadge({ isActive }: { isActive: boolean }) {
   );
 }
 
-function BrandActions({ brand }: { brand: Brand }) {
+type BrandActionsProps = {
+  brand: Brand;
+  // Comes from BrandsPage (handleToggleStatus), because that's where the brands state lives.
+  onToggleStatus: (brand: Brand) => void;
+};
+
+function BrandActions({ brand, onToggleStatus }: BrandActionsProps) {
   return (
     <div className="flex justify-end gap-2">
       <Link
@@ -195,9 +240,9 @@ function BrandActions({ brand }: { brand: Brand }) {
         <Pencil size={17} />
       </Link>
 
-      {/* TODO(you): onClick → PATCH the brand's isActive, then update it in your state. */}
       <button
         type="button"
+        onClick={() => onToggleStatus(brand)}
         aria-label={`${brand.isActive ? "Deactivate" : "Activate"} ${brand.name}`}
         title={brand.isActive ? "Deactivate" : "Activate"}
         className={`rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 ${
