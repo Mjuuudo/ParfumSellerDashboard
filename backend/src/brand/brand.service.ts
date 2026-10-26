@@ -11,9 +11,9 @@ export class BrandService {
     
     async createBrand ( data: BrandCreationDto ) {
         const brand = await db.orm.public.Brand.create({
-            name: data.name })
-
-
+            name: data.name,
+            image: data.image
+        })
 
         return brand ;
     }
@@ -66,9 +66,12 @@ export class BrandService {
             ...(data.isActive !== undefined && {
                 isActive: data.isActive,
             }),
+            ...(data.image !== undefined && {
+                image: data.image,
+            })
         };
 
-        if ( !Object.keys(updatedObject) ) {
+        if ( !Object.keys(updatedObject).length ) {
             return brand;
         }
 

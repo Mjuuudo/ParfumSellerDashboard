@@ -13,4 +13,9 @@ export class BrandUpdateDto {
     @IsBoolean()
     isActive?: boolean
 
+    @IsOptional()
+    @IsNotEmpty()
+    @IsString()
+    image?: string
+
 }

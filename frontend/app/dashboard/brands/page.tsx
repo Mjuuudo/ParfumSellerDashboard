@@ -6,6 +6,7 @@ import type { Brand } from "./_components/brand";
 import BrandAvatar from "./_components/BrandAvatar";
 import { BrandsEmpty } from "./_components/BrandStates";
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 
 export default function BrandsPage() {
 
@@ -13,7 +14,7 @@ export default function BrandsPage() {
   // the brands endpoint we'll build together, in a useEffect — same pattern as app/dashboard/users/page.tsx.
   // Also add loading/error state and pick the matching component from ./_components/BrandStates.
   const [brands, setBrands] = useState<Brand[]>([]);
-
+  const router = useRouter();
 
   // useEffect()
   useEffect(() => {
@@ -24,8 +25,14 @@ export default function BrandsPage() {
 
       });
 
+      if ( data.status === 401 ) {
+        alert ( `you need to Login !`);
+        router.push('/login');
+        return ;
+      }
       if (!data.ok) {
         alert("Error While Fetching Data !");
+        return ;
       }
 
       const Brands = await data.json();
@@ -55,8 +62,7 @@ export default function BrandsPage() {
 
     }
 
-    console.log(updatedStatus);
-    console.log(brand.id);
+
     const data = await fetch(`http://localhost:8000/api/brand/${brand.id}`, {
       method: "PATCH",
       credentials: "include",
