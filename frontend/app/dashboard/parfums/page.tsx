@@ -61,14 +61,34 @@ export default function ParfumsPage() {
 
   // Called when the on/off (Power) button of a perfume is clicked, in the table or on a mobile card.
   const handleToggleStatus = async (parfum: Parfum) => {
-    // TODO(you):
-    // 1. Send a PATCH to /api/parfum/${parfum.id} with the opposite of parfum.isActive (a real boolean).
-    // 2. If the response is not ok, alert and stop.
-    // 3. Update that one perfume in `parfums` with setParfums, so the badge changes without a reload.
-    
-  
-  
-  
+    const newStatus = !parfum.isActive;
+
+    console.log(newStatus);
+    console.log(parfum.id);
+    const data = await fetch(`http://localhost:8000/api/parfum/${parfum.id}`, {
+      method: "PATCH",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ isActive: newStatus }),
+    });
+
+    if (data.status === 401) {
+      router.push('/login');
+      return ;
+    }
+    if (!data.ok) {
+      alert(`Error While Modifying The Status ${data.status}`);
+      return ;
+    }
+
+    // Update only the clicked perfume in state, so its badge changes without a reload.
+    // .map() builds a NEW array: React only re-renders when state gets a new value,
+    // so changing parfum.isActive directly would not update the screen.
+    setParfums(parfums.map((item) =>
+      item.id === parfum.id ? { ...item, isActive: newStatus } : item
+    ));
   };
 
   return (

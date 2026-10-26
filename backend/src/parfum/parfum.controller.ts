@@ -1,6 +1,7 @@
 import { Controller, Post, Patch, Get, Body, Param, ParseIntPipe} from "@nestjs/common"
 import { ParfumCreationDto } from "./dto/createParfum.dto.js";
 import { ParfumService } from "./parfum.service.js";
+import { ParfumUpdateDto } from "./dto/updateParfum.dto.js";
 
 
 
@@ -21,7 +22,7 @@ export class ParfumController{
     }
 
     @Patch(':id')
-    async  updateParfum (@Body() data: ParfumCreationDto, @Param('id', ParseIntPipe) id: number) {
+    async  updateParfum (@Body() data: ParfumUpdateDto, @Param('id', ParseIntPipe) id: number) {
 
     
         return await this.parfumService.modifieParfum(data, id);

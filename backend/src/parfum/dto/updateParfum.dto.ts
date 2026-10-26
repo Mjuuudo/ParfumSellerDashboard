@@ -35,5 +35,11 @@ export class ParfumUpdateDto{
     @IsPositive()
     decant20Price?: number
 
+    @IsOptional()
+    @IsNotEmpty()
+    isActive?: boolean
+
+
+
     
 }

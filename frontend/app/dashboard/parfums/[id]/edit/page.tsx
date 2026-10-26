@@ -2,29 +2,126 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import type { Brand } from "../../../brands/_components/brand";
 import ParfumForm from "../../_components/ParfumForm";
+import type { Parfum } from "../../_components/parfum";
+import { useRouter } from "next/navigation"
+
 
 export default function EditParfumPage() {
   const params = useParams<{ id: string }>();
   const id = params.id;
 
-  // TODO(you): fetch the perfume with this id AND the brands list in a useEffect,
-  // then pass them as <ParfumForm parfum={...} brands={...} />.
-  // Only render the form once BOTH have loaded: the fields use defaultValue, which is
-  // read once when the form first appears, so data that arrives later won't show.
-  // (Your users/[id]/edit page shows a loading message until its data is there — same idea.)
+  // The perfume and the brands are fetched below; the form is only rendered once BOTH
+  // have loaded, because its fields use defaultValue (read once, when the form appears).
   const [brands, setBrands] = useState<Brand[]>([]);
+  // The perfume being edited. null until the fetch below has finished.
+  const [parfum, setParfum] = useState<Parfum | null>(null);
+  const router =  useRouter();
+  useEffect(() => {
+    const fetchParfum = async () => {
+      const data = await fetch(`http://localhost:8000/api/parfum/${id}`, {
+        method: "get",
+        credentials: "include",
+      });
+
+      if (data.status === 401){
+        router.push('/login');
+        return ;
+      }
+      if (!data.ok) {
+        alert(`Error Occured ! ${data.status}`);
+        return ;
+      }
+
+      const result = await data.json();
+      setParfum(result);
+    }
+
+
+    const fetchBrands = async () => {
+      const data = await fetch("http://localhost:8000/api/brand", {
+        method: "get",
+        credentials: "include",
+      });
+
+      if (data.status === 401){
+        router.push('/login');
+        return ;
+      }
+      if (!data.ok) {
+        alert(`Error Occured ! ${data.status}`);
+        return ;
+      }
+
+      const result = await data.json();
+      setBrands(result);
+    }
+
+    fetchParfum();
+    fetchBrands();
+  }, [id, router])
+
 
   async function handleUpdateParfum(event: FormEvent<HTMLFormElement>) {
     // Stops the browser from reloading the page on submit. Keep this line.
     event.preventDefault();
 
-    // TODO(you): read the fields with new FormData(event.currentTarget), convert the
-    // numbers and isActive ("true"/"false" → boolean), send only what changed,
-    // handle errors, then go back to /dashboard/parfums.
+    // The form is only shown once `parfum` has loaded, but TypeScript doesn't know that.
+    if (!parfum) return ;
+
+    // FormData values are always strings: convert numbers with Number()
+    // and isActive ("true" / "false") to a real boolean.
+    const formData = new FormData(event.currentTarget);
+    const name = String(formData.get("name")).trim();
+    const brandId = Number(formData.get("brandId"));
+    const originalVolume = Number(formData.get("originalVolume"));
+    const completePrice = Number(formData.get("completePrice"));
+    const decant10Price = Number(formData.get("decant10Price"));
+    const decant20Price = Number(formData.get("decant20Price"));
+    const isActive = formData.get("isActive") === "true";
+
+    // Only send the fields that are different from what was loaded.
+    const updatedObject = {
+      ...(name !== parfum.name && { name }),
+      ...(brandId !== parfum.brandId && { brandId }),
+      ...(originalVolume !== parfum.originalVolume && { originalVolume }),
+      ...(completePrice !== parfum.completePrice && { completePrice }),
+      ...(decant10Price !== parfum.decant10Price && { decant10Price }),
+      ...(decant20Price !== parfum.decant20Price && { decant20Price }),
+      ...(isActive !== parfum.isActive && { isActive }),
+    };
+
+    if ( !Object.keys(updatedObject).length ) {
+      alert("No Fields Were Changed");
+      return ;
+    }
+
+    const data = await fetch(`http://localhost:8000/api/parfum/${id}`, {
+      method: "PATCH",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(updatedObject),
+    });
+
+    if (data.status === 401) {
+      router.push('/login');
+      return ;
+    }
+    if (data.status === 409) {
+      alert("A perfume with this brand, name and size already exists !");
+      return ;
+    }
+    if (!data.ok) {
+      alert(`Error While Modifying The Perfume ${data.status}`);
+      return ;
+    }
+
+    router.replace('/dashboard/parfums');
   }
 
   return (
@@ -45,7 +142,15 @@ export default function EditParfumPage() {
         </p>
       </section>
 
-      <ParfumForm mode="edit" brands={brands} onSubmit={handleUpdateParfum} />
+      {/* Wait for BOTH the perfume and the brands: the form's fields use defaultValue,
+          which is only read when the form first appears. */}
+      {!parfum || brands.length === 0 ? (
+        <section className="rounded-2xl border border-slate-800 bg-slate-900 p-8 text-center">
+          <p className="text-slate-400">Loading perfume information...</p>
+        </section>
+      ) : (
+        <ParfumForm mode="edit" parfum={parfum} brands={brands} onSubmit={handleUpdateParfum} />
+      )}
     </div>
   );
 }
