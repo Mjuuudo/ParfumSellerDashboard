@@ -6,7 +6,8 @@ import { AuthModule } from '../Auth/auth.module.js';
 @Module({
     controllers: [ BrandController ],
     providers: [ BrandService ],
-    imports: [ AuthModule]
+    imports: [ AuthModule],
+    exports: [ BrandService ]
 })
 export  class BrandModule {
 

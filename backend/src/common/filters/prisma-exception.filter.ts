@@ -23,6 +23,8 @@ function isPrismaError ( exception: unknown ): boolean {
 
 
 }
+
+
 @Catch()
 export class PrismaExceptionFilter extends BaseExceptionFilter {
 
@@ -33,8 +35,8 @@ export class PrismaExceptionFilter extends BaseExceptionFilter {
             const response = host.switchToHttp().getResponse();
             response.status(409).json({
                 statusCode: 409,
-                message: 'username or email already exists',
-                error: 'Bad Request',
+                message: 'Data already exists In Our Records',
+                error: 'Conflict',
             });
             return;
 

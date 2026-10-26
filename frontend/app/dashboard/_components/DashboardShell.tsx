@@ -12,6 +12,7 @@ const segmentLabels: Record<string, string> = {
   dashboard: "Dashboard",
   users: "User Management",
   brands: "Brands",
+  parfums: "Perfumes",
   profile: "Profile",
   edit: "Edit",
 };
@@ -20,6 +21,7 @@ const segmentLabels: Record<string, string> = {
 const sectionEntities: Record<string, { name: string; createLabel: string }> = {
   users: { name: "User", createLabel: "Create User" },
   brands: { name: "Brand", createLabel: "Add Brand" },
+  parfums: { name: "Perfume", createLabel: "Add Perfume" },
 };
 
 // Only these paths have a page, so only these crumbs are rendered as links
@@ -30,6 +32,8 @@ const linkablePaths = new Set([
   "/dashboard/users/create",
   "/dashboard/brands",
   "/dashboard/brands/create",
+  "/dashboard/parfums",
+  "/dashboard/parfums/create",
   "/dashboard/profile",
 ]);
 
