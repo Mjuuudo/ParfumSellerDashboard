@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Param} from "@nestjs/common"
+import { Controller, Post, Patch, Get, Body, Param, ParseIntPipe} from "@nestjs/common"
 import { ParfumCreationDto } from "./dto/createParfum.dto.js";
 import { ParfumService } from "./parfum.service.js";
 
@@ -20,10 +20,24 @@ export class ParfumController{
         return await this.parfumService.createParfum(data);      
     }
 
+    @Patch(':id')
+    async  updateParfum (@Body() data: ParfumCreationDto, @Param('id', ParseIntPipe) id: number) {
+
+    
+        return await this.parfumService.modifieParfum(data, id);
+    }
+
     @Get()
     async retreiveParfum ( ) {
 
         return await this.parfumService.retrieveAllParfumes()
+    }
+    @Get(':id')
+    async retreiveParfumById (@Param('id', ParseIntPipe) id: number) {
+
+
+
+        return await this.parfumService.retrieveParfunById(id);
     }
 
 }

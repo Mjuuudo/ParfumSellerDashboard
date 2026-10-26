@@ -1,13 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Search, Pencil, Power, Tags } from "lucide-react";
 import type { Brand } from "../brands/_components/brand";
 import BrandAvatar from "../brands/_components/BrandAvatar";
 import PerfumeBottleOutline from "../_components/PerfumeBottleOutline";
 import { formatPrice, type Parfum } from "./_components/parfum";
 import { ParfumsEmpty } from "./_components/ParfumStates";
+import { useRouter } from "next/navigation" 
+
 
 export default function ParfumsPage() {
 
@@ -17,6 +19,45 @@ export default function ParfumsPage() {
   // Also add loading/error state and pick the matching component from ./_components/ParfumStates.
   const [parfums, setParfums] = useState<Parfum[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
+  const router = useRouter();
+
+
+  useEffect( () => {
+    const fetchParfums = async () => {
+      const parfums = await fetch(`http://localhost:8000/api/parfum`, {
+        method: "get",
+        credentials: "include",
+      })
+
+      if (!parfums.ok){
+        alert(`Error While fetching Data`);
+        return ;
+      }
+
+      setParfums(await parfums.json());
+
+      const brands = await fetch (`http://localhost:8000/api/brand`, {
+        method: "get",
+        credentials: "include",
+      })
+
+       if (!brands.ok){
+        alert(`Error While fetching Data`);
+        return ;
+      }
+
+      setBrands(await brands.json());
+
+      return ;
+
+
+    }
+
+    fetchParfums();
+
+
+  }, []);
+
 
   // Called when the on/off (Power) button of a perfume is clicked, in the table or on a mobile card.
   const handleToggleStatus = async (parfum: Parfum) => {
@@ -24,6 +65,10 @@ export default function ParfumsPage() {
     // 1. Send a PATCH to /api/parfum/${parfum.id} with the opposite of parfum.isActive (a real boolean).
     // 2. If the response is not ok, alert and stop.
     // 3. Update that one perfume in `parfums` with setParfums, so the badge changes without a reload.
+    
+  
+  
+  
   };
 
   return (

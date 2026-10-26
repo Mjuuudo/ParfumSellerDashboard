@@ -3,6 +3,7 @@ import { db } from "../prisma/db.js";
 import { ParfumCreationDto } from "./dto/createParfum.dto.js";
 import { UnauthorizedException } from "@nestjs/common";
 import { NotFoundException } from "@nestjs/common";
+import { ParfumUpdateDto } from "./dto/updateParfum.dto.js";
 
 
 
@@ -45,7 +46,12 @@ export class ParfumService{
     }
 
     async retrieveAllParfumes ( ) {
-        const data = await db.orm.public.Parfum.all();
+        const data = await db.orm.public.Parfum
+        .include('brand', (brand) =>
+            brand.select('name', 'image')
+        )
+        .all();
+
 
         if ( data.length === 0 ) {
             throw new NotFoundException(`No records found In Our Database`);
@@ -53,6 +59,53 @@ export class ParfumService{
         }
 
         return data;
+    }
+
+    async retrieveParfunById( Pid: number) {
+        const data = await db.orm.public.Parfum.where(
+            {id: Pid}
+        ).include(
+            'brand', (brand) => brand.select('name', 'image')
+        ).first();
+
+
+
+        return data;
+    }
+
+
+    async modifieParfum ( data: ParfumUpdateDto ,id: number ) {
+
+        const newObject = {
+            ...(data.name !== undefined && {
+                name: data.name,
+            }),
+            ...(data.originalVolume !== undefined && {
+                originalVolume: data.originalVolume,
+            }),
+            ...(data.completePrice !== undefined && {
+                completePrice: data.completePrice,
+            }),
+            ...(data.decant10Price !== undefined && {
+                decant10Price: data.decant10Price,
+            }),
+            ...(data.decant20Price !== undefined && {
+                decant20Price: data.decant20Price,
+            })
+        }
+
+        if ( !Object.keys(newObject).length ) {
+            return ;
+        }
+
+        const updatedObject = await db.orm.public.Parfum.where(
+            {
+                id: id
+            }
+        ).update(newObject);
+
+
+        return ( updatedObject );
     }
 
 }
