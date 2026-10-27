@@ -29,6 +29,11 @@ export default function ParfumsPage() {
         credentials: "include",
       })
 
+        if (parfums.status === 401) {
+        router.push('/login');
+        return ;
+      }
+
       if (!parfums.ok){
         alert(`Error While fetching Data`);
         return ;
@@ -40,6 +45,11 @@ export default function ParfumsPage() {
         method: "get",
         credentials: "include",
       })
+
+      if (brands.status === 401) {
+        router.push('/login');
+        return ;
+      }
 
        if (!brands.ok){
         alert(`Error While fetching Data`);
