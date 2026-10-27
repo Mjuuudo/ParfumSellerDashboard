@@ -1481,6 +1481,13 @@
                   "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
+              },
+              "unusedQuantity": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
               }
             },
             "relations": {
@@ -1551,6 +1558,9 @@
                 },
                 "receivedBy": {
                   "column": "receivedBy"
+                },
+                "unusedQuantity": {
+                  "column": "unusedQuantity"
                 }
               },
               "namespaceId": "public",
@@ -2874,6 +2884,11 @@
                   "codecId": "pg/int4@1",
                   "nativeType": "int4",
                   "nullable": false
+                },
+                "unusedQuantity": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
                 }
               },
               "foreignKeys": [
@@ -3082,7 +3097,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "44d6762a650c035679787d64ff2c20dac1d007d55e16b6814a12c122dafcdf11"
+    "storageHash": "03097e4092520b0341176b3ca0e7c1fd2f0682d7dffb12d6286fc6c0b4794193"
   },
   "execution": {
     "executionHash": "7cfd33a50961b5cc96407c6d6170117f9eddd327b45504a4d979ced8125b67aa",

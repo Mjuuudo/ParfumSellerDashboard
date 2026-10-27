@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common"
 import { StockCreationDto } from "./dto/stockCreation.dto";
 import { db } from "../prisma/db.js";
 import { UnauthorizedException } from "@nestjs/common";
-import { NotFoundException } from "@nestjs/common";
+import { NotFoundException, BadRequestException } from "@nestjs/common";
 import { StockUpdateDto } from "./dto/stockUpdate.dto";
 
 
@@ -31,6 +31,8 @@ export class StockService{
         const newObject = {
             parfumId: data.parfumId,
             quantity: data.quantity,
+            // A new delivery: no bottle opened yet, so every bottle is unused.
+            unusedQuantity: data.quantity,
             purchaseCostPerBottle: data.purchaseCostPerBottle,
             receivedBy: Number(userId)
         };
@@ -92,16 +94,26 @@ export class StockService{
             return ;
         }
 
+        // Bottles already opened from this batch can't be "un-opened": the new quantity
+        // must still cover them, and unusedQuantity moves by the same amount as quantity.
+        const openedBottles = batch.quantity - batch.unusedQuantity;
+        if (data.quantity !== undefined && data.quantity < openedBottles) {
+            throw new BadRequestException(
+                `Quantity can't be lower than the ${openedBottles} bottle(s) already opened from this batch !`
+            );
+        }
+
         const newObject = {
             ...((data.parfumId !== batch?.parfum?.id
                 && data.parfumId !== undefined
             ) && {
                 parfumId: data.parfumId,
             }),
-            ...((data.quantity !== batch?.quantity 
+            ...((data.quantity !== batch?.quantity
                 && data.quantity !== undefined
             ) && {
                 quantity: data.quantity,
+                unusedQuantity: data.quantity - openedBottles,
             }),
             ...((data.purchaseCostPerBottle !== batch?.purchaseCostPerBottle 
                     && data.purchaseCostPerBottle !== undefined

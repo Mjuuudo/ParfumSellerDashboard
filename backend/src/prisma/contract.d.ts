@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'44d6762a650c035679787d64ff2c20dac1d007d55e16b6814a12c122dafcdf11'>;
+  StorageHashBase<'03097e4092520b0341176b3ca0e7c1fd2f0682d7dffb12d6286fc6c0b4794193'>;
 export type ExecutionHash =
   ExecutionHashBase<'7cfd33a50961b5cc96407c6d6170117f9eddd327b45504a4d979ced8125b67aa'>;
 export type ProfileHash =
@@ -349,6 +349,7 @@ export type FieldOutputTypes = {
       readonly quantity: CodecTypes['pg/int4@1']['output'];
       readonly receivedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly receivedBy: CodecTypes['pg/int4@1']['output'];
+      readonly unusedQuantity: CodecTypes['pg/int4@1']['output'];
     };
     readonly User: {
       readonly Role: 'OWNER' | 'EMPLOYEE';
@@ -467,6 +468,7 @@ export type FieldInputTypes = {
       readonly quantity: CodecTypes['pg/int4@1']['input'];
       readonly receivedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly receivedBy: CodecTypes['pg/int4@1']['input'];
+      readonly unusedQuantity: CodecTypes['pg/int4@1']['input'];
     };
     readonly User: {
       readonly Role: 'OWNER' | 'EMPLOYEE';
@@ -585,6 +587,7 @@ export type StorageColumnTypes = {
       readonly quantity: CodecTypes['pg/int4@1']['output'];
       readonly receivedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly receivedBy: CodecTypes['pg/int4@1']['output'];
+      readonly unusedQuantity: CodecTypes['pg/int4@1']['output'];
     };
     readonly User: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -703,6 +706,7 @@ export type StorageColumnInputTypes = {
       readonly quantity: CodecTypes['pg/int4@1']['input'];
       readonly receivedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly receivedBy: CodecTypes['pg/int4@1']['input'];
+      readonly unusedQuantity: CodecTypes['pg/int4@1']['input'];
     };
     readonly User: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -868,6 +872,7 @@ export namespace Models {
     quantity: CodecTypes['pg/int4@1']['output'];
     receivedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     receivedBy: CodecTypes['pg/int4@1']['output'];
+    unusedQuantity: CodecTypes['pg/int4@1']['output'];
     decantBottles: public_DecantBottle[];
     parfum: public_Parfum;
     receivedByUser: public_User;
@@ -1796,6 +1801,11 @@ type ContractBase = Omit<
                   readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
                 };
                 readonly receivedBy: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                };
+                readonly unusedQuantity: {
                   readonly nativeType: 'int4';
                   readonly codecId: 'pg/int4@1';
                   readonly nullable: false;
@@ -2867,6 +2877,10 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
               };
+              readonly unusedQuantity: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
             };
             readonly relations: {
               readonly decantBottles: {
@@ -2912,6 +2926,7 @@ type ContractBase = Omit<
                 readonly quantity: { readonly column: 'quantity' };
                 readonly receivedAt: { readonly column: 'receivedAt' };
                 readonly receivedBy: { readonly column: 'receivedBy' };
+                readonly unusedQuantity: { readonly column: 'unusedQuantity' };
               };
             };
           };

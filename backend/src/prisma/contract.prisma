@@ -166,6 +166,7 @@ model StockBatch{
   parfum Parfum @relation(fields: [parfumId], references: [id])
 
   quantity Int
+  unusedQuantity Int
   purchaseCostPerBottle Int
   receivedAt DateTime @default(now())
 

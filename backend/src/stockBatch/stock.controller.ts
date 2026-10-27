@@ -23,6 +23,8 @@ export class StockController{
 
 
 
+    // POST /api/stock — records a delivery: { parfumId, quantity, purchaseCostPerBottle }.
+    // receivedBy is taken from the logged-in user (request.user.userId), never from the body.
     @Post()
     @UseGuards(AuthGuard)
     async createStock( @Body() data: StockCreationDto,
@@ -34,6 +36,8 @@ export class StockController{
         return await this.stockService.createStockBatch(Number(userID), data);
     }
 
+    // PATCH /api/stock/:id — corrects a delivery: only the fields sent (parfumId, quantity, cost) change.
+    // receivedBy can't be changed here (not in StockUpdateDto, so whitelist strips it).
     @Patch(':id')
     @UseGuards(AuthGuard)
     async modifyStockBatch ( @Param('id', ParseIntPipe) id: number,@Body() data: StockUpdateDto) {
@@ -43,6 +47,8 @@ export class StockController{
         return await this.stockService.modifieBatch(id, data);
     }
 
+    // GET /api/stock — returns every delivery with its perfume (+ brand) and the user who received it.
+    // Requires a logged-in user; used by the Inventory list page.
     @Get()
     @UseGuards(AuthGuard)
     async getStockBatches ( ) {
@@ -51,6 +57,8 @@ export class StockController{
         return await this.stockService.retreiveStockBatch();
     }
 
+    // GET /api/stock/:id — returns one delivery by id, with its perfume and receiver (used by the edit page).
+    // Must stay below the fixed GET routes; :id is parsed to a number by ParseIntPipe.
     @Get(':id')
     @UseGuards(AuthGuard)
     async getStockById( @Param('id', ParseIntPipe) id: number) {

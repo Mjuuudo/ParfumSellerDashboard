@@ -1,0 +1,121 @@
+[
+  {
+    "id": "column.public.StockBatch.unusedQuantity",
+    "label": "Add column \"unusedQuantity\" to \"StockBatch\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "unusedQuantity",
+        "table": "StockBatch"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"unusedQuantity\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StockBatch",
+          "unusedQuantity"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"unusedQuantity\"",
+        "sql": "ALTER TABLE \"public\".\"StockBatch\" ADD COLUMN \"unusedQuantity\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"unusedQuantity\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StockBatch",
+          "unusedQuantity"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_migration.backfill-StockBatch-unusedQuantity",
+    "label": "Data transform: backfill-StockBatch-unusedQuantity",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "Check backfill-StockBatch-unusedQuantity has work to do",
+        "sql": "SELECT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"StockBatch\" WHERE \"unusedQuantity\" IS NULL LIMIT 1) AS ok",
+        "params": []
+      }
+    ],
+    "execute": [
+      {
+        "description": "Run backfill-StockBatch-unusedQuantity",
+        "sql": "UPDATE \"public\".\"StockBatch\" SET \"unusedQuantity\" = \"quantity\" WHERE \"unusedQuantity\" IS NULL",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "Verify backfill-StockBatch-unusedQuantity resolved all violations",
+        "sql": "SELECT NOT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"StockBatch\" WHERE \"unusedQuantity\" IS NULL LIMIT 1) AS ok",
+        "params": []
+      }
+    ]
+  },
+  {
+    "id": "alterNullability.setNotNull.StockBatch.unusedQuantity",
+    "label": "Set NOT NULL on \"StockBatch\".\"unusedQuantity\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "unusedQuantity",
+        "table": "StockBatch"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"unusedQuantity\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StockBatch",
+          "unusedQuantity"
+        ]
+      },
+      {
+        "description": "ensure no NULL values in \"unusedQuantity\"",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"public\".\"StockBatch\" WHERE \"unusedQuantity\" IS NULL) AS \"result\"",
+        "params": []
+      }
+    ],
+    "execute": [
+      {
+        "description": "set NOT NULL on \"unusedQuantity\"",
+        "sql": "ALTER TABLE \"public\".\"StockBatch\" ALTER COLUMN \"unusedQuantity\" SET NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"unusedQuantity\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "StockBatch",
+          "unusedQuantity",
+          "NO"
+        ]
+      }
+    ]
+  }
+]

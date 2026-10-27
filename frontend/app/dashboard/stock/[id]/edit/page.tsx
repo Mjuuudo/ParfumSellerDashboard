@@ -84,7 +84,7 @@ export default function EditStockBatchPage() {
       body: JSON.stringify(newObject)
     });
 
-    if ( data.status === 401 ){
+    if ( data.status === 401 || data.status === 403){
       router.push('/login');
       return ;
     }

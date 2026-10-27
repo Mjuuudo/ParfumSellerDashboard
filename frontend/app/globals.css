@@ -24,3 +24,44 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* ── Scrollbars: thin and dark to match the slate/amber dashboard ── */
+
+html {
+  color-scheme: dark; /* dark native scrollbar track, date pickers, etc. */
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #334155 transparent; /* slate-700 thumb, no track */
+}
+
+/* Safari (no scrollbar-color support yet): same look with the WebKit pseudo-elements */
+@supports not (scrollbar-color: auto) {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #f59e0b; /* amber-500 */
+  }
+}
+
+/* Scrollbar that stays invisible until the area is hovered (used by the sidebar). */
+.scrollbar-subtle {
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.2s;
+}
+.scrollbar-subtle:hover,
+.scrollbar-subtle:focus-within {
+  scrollbar-color: #475569 transparent; /* slate-600 */
+}

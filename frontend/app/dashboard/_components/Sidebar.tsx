@@ -60,7 +60,7 @@ export default function Sidebar({ onNavigate, onClose }: SidebarProps) {
       </div>
 
       {/* Navigation */}
-      <nav aria-label="Dashboard" className="flex-1 space-y-6 overflow-y-auto px-3 py-6">
+      <nav aria-label="Dashboard" className="scrollbar-subtle flex-1 space-y-6 overflow-y-auto px-3 py-6">
         {navGroups.map((group) => (
           <div key={group.title}>
             <p className="px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
