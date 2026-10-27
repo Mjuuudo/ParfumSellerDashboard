@@ -3,6 +3,7 @@ import { StockCreationDto } from "./dto/stockCreation.dto";
 import { db } from "../prisma/db.js";
 import { UnauthorizedException } from "@nestjs/common";
 import { NotFoundException } from "@nestjs/common";
+import { StockUpdateDto } from "./dto/stockUpdate.dto";
 
 
 @Injectable()
@@ -52,7 +53,9 @@ export class StockService{
             'receivedByUser',
              (user) =>
                  user.select('id',
-                         'username')
+                         'username',
+                        'firstName',
+                            'lastName')
         ).all();
 
         if (stock.length === 0){
@@ -81,6 +84,41 @@ export class StockService{
         }
 
         return batch ;
+    }
+
+    async modifieBatch ( id: number, data : StockUpdateDto) {
+        const batch = await this.retreiveById(id);
+        if( !batch ) {
+            return ;
+        }
+
+        const newObject = {
+            ...((data.parfumId !== batch?.parfum?.id
+                && data.parfumId !== undefined
+            ) && {
+                parfumId: data.parfumId,
+            }),
+            ...((data.quantity !== batch?.quantity 
+                && data.quantity !== undefined
+            ) && {
+                quantity: data.quantity,
+            }),
+            ...((data.purchaseCostPerBottle !== batch?.purchaseCostPerBottle 
+                    && data.purchaseCostPerBottle !== undefined
+            ) && {
+                purchaseCostPerBottle: data.purchaseCostPerBottle,
+            }),
+        }
+
+        if ( !Object.keys(newObject).length ) {
+            return ;
+        }
+
+        const result = await db.orm.public.StockBatch.where({
+            id: id
+        }).update(newObject);
+
+        return result;
     }
 
 }

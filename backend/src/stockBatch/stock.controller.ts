@@ -1,8 +1,9 @@
-import { Controller, Body, UseGuards, ParseIntPipe,  Req, Param, Post, Get } from "@nestjs/common"
+import { Controller, Body, UseGuards, ParseIntPipe,  Req, Param, Post, Get, Patch } from "@nestjs/common"
 import { StockCreationDto } from "./dto/stockCreation.dto.js";
 import { AuthGuard } from "../Auth/auth.guard.js";
 import type { Request } from 'express'
 import { StockService } from "./stock.service.js";
+import { StockUpdateDto } from "./dto/stockUpdate.dto.js";
 
 // Express's Request + the `user` object that AuthGuard attaches (see auth.guard.ts).
 interface AuthenticatedRequest extends Request {
@@ -31,6 +32,15 @@ export class StockController{
 
 
         return await this.stockService.createStockBatch(Number(userID), data);
+    }
+
+    @Patch(':id')
+    @UseGuards(AuthGuard)
+    async modifyStockBatch ( @Param('id', ParseIntPipe) id: number,@Body() data: StockUpdateDto) {
+
+
+
+        return await this.stockService.modifieBatch(id, data);
     }
 
     @Get()

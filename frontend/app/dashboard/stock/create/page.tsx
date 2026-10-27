@@ -1,16 +1,43 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, useEffect } from "react";
 import { ArrowLeft, PackagePlus } from "lucide-react";
 import type { Parfum } from "../../parfums/_components/parfum";
 import StockForm from "../_components/StockForm";
+import { useRouter } from "next/navigation"
 
 export default function RecordDeliveryPage() {
 
   // TODO(you): fetch the perfumes in a useEffect and store them here so the
   // perfume dropdown has options (only the active ones?).
   const [parfums, setParfums] = useState<Parfum[]>([]);
+  const router = useRouter();
+
+  useEffect( () => {
+    const  fetchData = async () => {
+      const data = await fetch(`http://localhost:8000/api/parfum`, {
+        method: "get",
+        credentials: "include"
+      })
+
+      if (data.status === 401) {
+        router.push('/login');
+        return ;
+      }
+
+      if (!data.ok) {
+        alert(`Error While Fetching Data !`);
+        return ;
+      }
+
+      setParfums( await data.json() );
+    }
+
+
+    fetchData();
+  }, [])
+
 
   async function handleRecordDelivery(event: FormEvent<HTMLFormElement>) {
     // Stops the browser from reloading the page on submit. Keep this line.
@@ -21,6 +48,38 @@ export default function RecordDeliveryPage() {
     // receivedAt is "" when left empty: only send it if the user picked a date.
     // Don't send receivedBy: the backend should take it from the logged-in user.
     // Send it, handle errors, then go back to /dashboard/stock.
+    const formData = new FormData(event.currentTarget);
+
+    console.log(formData.get("quantity"));
+
+    const newObject = {
+      parfumId: Number(formData.get("parfumId")),
+      quantity: Number(formData.get("quantity")),
+      purchaseCostPerBottle: Number(formData.get("purchaseCostPerBottle"))
+    };
+
+    const data = await fetch(`http://localhost:8000/api/stock`, {
+      method: "post",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(newObject)
+    })
+
+    if (data.status === 401) {
+      router.push("/login");
+      return ;
+    }
+
+    if (!data.ok){
+      alert("Error While Creating New Stock Batch");
+      return ;
+    }
+
+    router.push('/dashboard/stock')
+    return ;
+  
   }
 
   return (
@@ -43,7 +102,7 @@ export default function RecordDeliveryPage() {
         </p>
       </section>
 
-      <StockForm parfums={parfums} onSubmit={handleRecordDelivery} />
+      <StockForm mode="create" parfums={parfums} onSubmit={handleRecordDelivery} />
     </div>
   );
 }

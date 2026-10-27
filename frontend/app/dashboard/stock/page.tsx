@@ -1,13 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { PackagePlus, Search, Boxes, CalendarDays, UserRound } from "lucide-react";
+import { useState, useEffect } from "react";
+import { PackagePlus, Search, Boxes, CalendarDays, UserRound, Pencil } from "lucide-react";
 import type { Parfum } from "../parfums/_components/parfum";
 import { formatPrice } from "../parfums/_components/parfum";
 import PerfumeBottleOutline from "../_components/PerfumeBottleOutline";
 import type { StockBatch } from "./_components/stockBatch";
 import { StockEmpty } from "./_components/StockStates";
+import { useRouter } from "next/navigation"
+
 
 export default function StockPage() {
 
@@ -16,6 +18,41 @@ export default function StockPage() {
   // Also add loading/error state and pick the matching component from ./_components/StockStates.
   const [batches, setBatches] = useState<StockBatch[]>([]);
   const [parfums, setParfums] = useState<Parfum[]>([]);
+  const router = useRouter()
+  useEffect( () => {
+    const fetchData = async () => {
+      const data = await fetch(`http://localhost:8000/api/parfum`, {
+        method: "get",
+        credentials: "include",
+      })
+      if (data.status === 401){
+        router.push('/login');
+        return ;
+      }
+
+      if (!data.ok) {
+        alert("Data Fetching FAILED");
+        return ;
+      }
+
+      setParfums(await data.json());
+      const batches = await fetch(`http://localhost:8000/api/stock`, {
+        method: "get",
+        credentials: "include"
+      });
+
+      if ( !batches.ok ){
+        alert("Data Fetching FAILED");
+        return ;
+      }
+
+      setBatches( await batches.json())
+    };
+
+    fetchData();
+  }, [])
+
+
 
   return (
     <div className="space-y-8">
@@ -114,6 +151,7 @@ export default function StockPage() {
                     <th className="px-6 py-4 text-right font-medium">Cost / Bottle</th>
                     <th className="px-6 py-4 text-right font-medium">Total Cost</th>
                     <th className="px-6 py-4 font-medium">Received By</th>
+                    <th className="px-6 py-4 text-right font-medium">Actions</th>
                   </tr>
                 </thead>
 
@@ -141,6 +179,11 @@ export default function StockPage() {
                       <td className="px-6 py-4">
                         <ReceivedBy batch={batch} />
                       </td>
+                      <td className="px-6 py-4">
+                        <div className="flex justify-end">
+                          <EditBatchLink batch={batch} />
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -153,7 +196,10 @@ export default function StockPage() {
                 <li key={batch.id} className="space-y-3 px-4 py-4">
                   <div className="flex items-start justify-between gap-3">
                     <ParfumCell batch={batch} />
-                    <QuantityPill quantity={batch.quantity} />
+                    <div className="flex shrink-0 items-center gap-1">
+                      <QuantityPill quantity={batch.quantity} />
+                      <EditBatchLink batch={batch} />
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
@@ -212,6 +258,19 @@ function ParfumCell({ batch }: { batch: StockBatch }) {
         <span className="text-slate-500">Perfume #{batch.parfumId}</span>
       )}
     </div>
+  );
+}
+
+function EditBatchLink({ batch }: { batch: StockBatch }) {
+  return (
+    <Link
+      href={`/dashboard/stock/${batch.id}/edit`}
+      aria-label={`Edit batch #${batch.id}`}
+      title="Edit"
+      className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-amber-400"
+    >
+      <Pencil size={17} />
+    </Link>
   );
 }
 

@@ -1,10 +1,14 @@
 import Link from "next/link";
 import type { FormEvent } from "react";
-import { CalendarDays, Hash, Coins, PackagePlus, Info } from "lucide-react";
+import { CalendarDays, Hash, Coins, PackagePlus, Info, Save, TriangleAlert } from "lucide-react";
 import { CURRENCY, type Parfum } from "../../parfums/_components/parfum";
 import PerfumeBottleOutline from "../../_components/PerfumeBottleOutline";
+import type { StockBatch } from "./stockBatch";
 
 type StockFormProps = {
+  mode: "create" | "edit";
+  // The batch being edited. Leave it out on the create page.
+  batch?: StockBatch;
   // Options for the perfume dropdown. Your page fetches them and passes them in.
   parfums: Parfum[];
   // Your submit handler. Read the values with new FormData(event.currentTarget):
@@ -18,10 +22,24 @@ const inputClass =
 const fieldBoxClass =
   "flex items-center gap-3 rounded-lg border border-slate-700 bg-slate-950 px-3 focus-within:border-amber-400";
 
-// Form UI for /dashboard/stock/create. It only lays out the fields; the page owns the logic.
-export default function StockForm({ parfums, onSubmit }: StockFormProps) {
+// Shared form UI for /dashboard/stock/create and /dashboard/stock/[id]/edit.
+// It only lays out the fields; the page that uses it owns the logic.
+export default function StockForm({ mode, batch, parfums, onSubmit }: StockFormProps) {
+  const isEdit = mode === "edit";
+
   return (
     <form onSubmit={onSubmit} className="space-y-8">
+      {/* Editing a delivery changes stock history, so say it clearly */}
+      {isEdit && (
+        <div className="flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+          <TriangleAlert size={18} className="mt-0.5 shrink-0 text-amber-400" />
+          <p>
+            Only correct mistakes here (wrong count, wrong price). Bottles from this batch may
+            already be opened for decants, so lowering the quantity can make your stock inconsistent.
+          </p>
+        </div>
+      )}
+
       {/* What arrived */}
       <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6 sm:p-8">
         <div className="mb-6 border-b border-slate-800 pb-5">
@@ -42,7 +60,7 @@ export default function StockForm({ parfums, onSubmit }: StockFormProps) {
                 id="parfumId"
                 name="parfumId"
                 required
-                defaultValue=""
+                defaultValue={batch ? String(batch.parfumId) : ""}
                 className="w-full bg-transparent py-3 text-sm outline-none [&>option]:bg-slate-900"
               >
                 <option value="" disabled>
@@ -73,6 +91,7 @@ export default function StockForm({ parfums, onSubmit }: StockFormProps) {
                 required
                 min={1}
                 step={1}
+                defaultValue={batch?.quantity ?? ""}
                 placeholder="12"
                 className={inputClass}
               />
@@ -90,10 +109,14 @@ export default function StockForm({ parfums, onSubmit }: StockFormProps) {
                 id="receivedAt"
                 name="receivedAt"
                 type="date"
+                // "2026-10-26T14:03:00.000Z" → "2026-10-26", the format a date input expects.
+                defaultValue={batch ? batch.receivedAt.slice(0, 10) : ""}
                 className={`${inputClass} [color-scheme:dark]`}
               />
             </div>
-            <p className="text-xs text-slate-500">Leave empty if it arrived today.</p>
+            <p className="text-xs text-slate-500">
+              {isEdit ? "The date this delivery arrived." : "Leave empty if it arrived today."}
+            </p>
           </div>
         </div>
       </section>
@@ -122,6 +145,7 @@ export default function StockForm({ parfums, onSubmit }: StockFormProps) {
                 required
                 min={1}
                 step={1}
+                defaultValue={batch?.purchaseCostPerBottle ?? ""}
                 placeholder="0"
                 className={inputClass}
               />
@@ -143,7 +167,9 @@ export default function StockForm({ parfums, onSubmit }: StockFormProps) {
 
         <p className="mt-5 flex items-start gap-2 text-xs text-slate-500">
           <Info size={14} className="mt-0.5 shrink-0" />
-          The delivery is recorded under your account automatically.
+          {isEdit
+            ? "The person who received this delivery stays the same."
+            : "The delivery is recorded under your account automatically."}
         </p>
       </section>
 
@@ -160,8 +186,8 @@ export default function StockForm({ parfums, onSubmit }: StockFormProps) {
           type="submit"
           className="inline-flex items-center justify-center gap-2 rounded-lg bg-amber-500 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-400"
         >
-          <PackagePlus size={17} />
-          Record Delivery
+          {isEdit ? <Save size={17} /> : <PackagePlus size={17} />}
+          {isEdit ? "Save Changes" : "Record Delivery"}
         </button>
       </div>
     </form>
