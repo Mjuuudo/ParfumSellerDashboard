@@ -19,6 +19,14 @@ export class StockService{
             throw new NotFoundException(`User Not Found !`);
         }
 
+        const searchPerfum = await db.orm.public.Parfum.where({
+            id: data.parfumId
+        }).first();
+
+        if ( !searchPerfum ) {
+            throw new NotFoundException(`Parfum Selected Not Found`)
+        }
+
         const newObject = {
             parfumId: data.parfumId,
             quantity: data.quantity,
@@ -33,7 +41,19 @@ export class StockService{
 
 
     async retreiveStockBatch ( ) {
-        const stock = await db.orm.public.StockBatch.all();
+        const stock = await db.orm.public.StockBatch.include('parfum',
+            (parfum) => 
+                parfum.include('brand', 
+                    (brand) => 
+                        brand.select('name',
+                             'isActive'))
+                                    .select('name'),
+        ).include(
+            'receivedByUser',
+             (user) =>
+                 user.select('id',
+                         'username')
+        ).all();
 
         if (stock.length === 0){
             return ;
@@ -46,7 +66,15 @@ export class StockService{
     async retreiveById( id: number ) {
         const batch = await db.orm.public.StockBatch.where({
             id: id
-        }).first();
+        }).include('parfum', 
+            (parfum) => parfum
+                    .include('brand',(brand) => brand.
+                        select('name', 'isActive'))
+                            .select('id', 'name'))
+                                .include('receivedByUser', 
+                                    (user) => user
+                                    .select('username',
+                                         'email')).first();
 
         if ( !batch ) {
             return ;
