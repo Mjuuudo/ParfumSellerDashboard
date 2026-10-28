@@ -57,6 +57,25 @@ export class BottleService{
         return bottles;
     }
 
+    async getBottleById ( bottleId: number ) {
+         const bottle = await db.orm.public.DecantBottle.include(
+            'stockBatch', (stockBatch) => stockBatch.include(
+                'parfum', (parfum) => parfum.include('brand', 
+                    (brand) => brand.select('name')
+                ).select('name', 'originalVolume', 'completePrice')
+            ).include('receivedByUser', (user) => user.select('id', 'username', 'email')).
+            select('quantity', 'unusedQuantity', 'purchaseCostPerBottle')
+        ).where({id: bottleId}).first();
+        
+        
+        if ( !bottle ) {
+            return ;
+        }
+
+        return bottle;
+
+    }
+
     async test() {
         const stockbatch = await db.orm.public.StockBatch.where(
             {id: 1}

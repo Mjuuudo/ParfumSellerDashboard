@@ -14,11 +14,13 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
+import { useToast } from "../../../_components/Toast";
 
 
 export default function CreateUserPage() {
 
   const router = useRouter();
+  const toast = useToast();
 
 
   useEffect(() => {
@@ -39,13 +41,13 @@ export default function CreateUserPage() {
     }
 
     if (!response.ok) {
-      alert(`Problem Was Detected ${response.status}`)
+      toast.error(`Problem Was Detected ${response.status}`)
       router.push("/login");
     }
   };
 
   checkOwner();
-}, [router]);
+}, [router, toast]);
 
 
   const handleCreateUser = async (event: FormEvent<HTMLFormElement>) => {
@@ -79,7 +81,7 @@ export default function CreateUserPage() {
     }
 
     if (!response.ok) {
-      alert('There Is An error While Creating The User !');
+      toast.error('There Is An error While Creating The User !');
       return ;
     }
 
@@ -124,7 +126,7 @@ export default function CreateUserPage() {
             <div className="border-b border-slate-800 pb-3">
               <h2 className="font-semibold">Personal Information</h2>
               <p className="mt-1 text-sm text-slate-400">
-                Enter the new user's contact details.
+                Enter the new user&apos;s contact details.
               </p>
             </div>
 

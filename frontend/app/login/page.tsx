@@ -3,12 +3,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useToast } from "../_components/Toast";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const toast = useToast();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -29,7 +31,7 @@ export default function LoginPage() {
     if (!result.ok) {
         setUsername("");
         setPassword("");
-        alert("Login failed. Please check your credentials and try again.");
+        toast.error("Login failed. Please check your credentials and try again.", "Sign in failed");
         return;
     }
 

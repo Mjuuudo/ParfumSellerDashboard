@@ -8,6 +8,8 @@ import type { Parfum } from "../../../parfums/_components/parfum";
 import type { StockBatch } from "../../_components/stockBatch";
 import StockForm from "../../_components/StockForm";
 import { useRouter } from "next/navigation"
+import { useToast } from "../../../../_components/Toast";
+import { LoadingCard, LoadErrorCard } from "../../../_components/LoadStateCards";
 
 
 export default function EditStockBatchPage() {
@@ -20,8 +22,14 @@ export default function EditStockBatchPage() {
   const [batch, setBatch] = useState<StockBatch | null>(null);
   const [parfums, setParfums] = useState<Parfum[]>([]);
   const router = useRouter()
+  const toast = useToast();
+  // true → the loading card turns into an error card with "Try again".
+  const [loadError, setLoadError] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0); // +1 → the useEffect below runs again
+
   useEffect( () => {
     const fetchData = async() => {
+      try {
       const data = await fetch(`http://localhost:8000/api/stock/${id}`, {
         method: "get",
         credentials: "include"
@@ -33,7 +41,8 @@ export default function EditStockBatchPage() {
       }
 
       if ( !data.ok ) {
-        alert("Data Fetching Error")
+        toast.error("Data Fetching Error")
+        setLoadError(true);
         return ;
       }
 
@@ -45,17 +54,26 @@ export default function EditStockBatchPage() {
       });
 
       if ( !parfums.ok ) {
-        alert("Data Fetching Error")
+        toast.error("Data Fetching Error")
+        setLoadError(true);
         return ;
       }
 
       setParfums( await parfums.json());
-      
-      
+
+      } catch {
+        toast.error("Could not reach the server.");
+        setLoadError(true);
       }
-    
+      }
+
       fetchData();
-  }, [])
+  }, [id, reloadKey, router, toast])
+
+  const retry = () => {
+    setLoadError(false);
+    setReloadKey((key) => key + 1);
+  };
 
 
 
@@ -90,7 +108,7 @@ export default function EditStockBatchPage() {
     }
 
     if ( !data.ok ) {
-      alert(`Error While fetching Data ${data.status}!`);
+      toast.error(`Error While fetching Data ${data.status}!`);
       return ;
     }
 
@@ -116,10 +134,10 @@ export default function EditStockBatchPage() {
         </p>
       </section>
 
-      {!batch || parfums.length === 0 ? (
-        <section className="rounded-2xl border border-slate-800 bg-slate-900 p-8 text-center">
-          <p className="text-slate-400">Loading delivery information...</p>
-        </section>
+      {loadError ? (
+        <LoadErrorCard what="this delivery" onRetry={retry} />
+      ) : !batch || parfums.length === 0 ? (
+        <LoadingCard label="Loading delivery information..." />
       ) : (
         <StockForm mode="edit" batch={batch} parfums={parfums} onSubmit={handleUpdateBatch} />
       )}

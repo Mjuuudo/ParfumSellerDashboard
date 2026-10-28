@@ -7,8 +7,9 @@ import type { Parfum } from "../parfums/_components/parfum";
 import { formatPrice } from "../parfums/_components/parfum";
 import PerfumeBottleOutline from "../_components/PerfumeBottleOutline";
 import type { StockBatch } from "./_components/stockBatch";
-import { StockEmpty } from "./_components/StockStates";
+import { StockEmpty, StockError, StockLoading } from "./_components/StockStates";
 import { useRouter } from "next/navigation"
+import { useToast } from "../../_components/Toast";
 
 
 export default function StockPage() {
@@ -19,8 +20,16 @@ export default function StockPage() {
   const [batches, setBatches] = useState<StockBatch[]>([]);
   const [parfums, setParfums] = useState<Parfum[]>([]);
   const router = useRouter()
+  const toast = useToast();
+
+  // Loading / error state of the list (same approach as the decant bottles page).
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0); // +1 → the useEffect below runs again
+
   useEffect( () => {
     const fetchData = async () => {
+      try {
       const data = await fetch(`http://localhost:8000/api/parfum`, {
         method: "get",
         credentials: "include",
@@ -31,7 +40,8 @@ export default function StockPage() {
       }
 
       if (!data.ok) {
-        alert("Data Fetching FAILED");
+        toast.error("Data Fetching FAILED");
+        setError(true);
         return ;
       }
 
@@ -42,15 +52,29 @@ export default function StockPage() {
       });
 
       if ( !batches.ok ){
-        alert("Data Fetching FAILED");
+        toast.error("Data Fetching FAILED");
+        setError(true);
         return ;
       }
 
       setBatches( await batches.json())
+      } catch {
+        toast.error("Could not reach the server.");
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchData();
-  }, [])
+  }, [reloadKey, router, toast])
+
+  // "Try again" button of the error state.
+  const retry = () => {
+    setLoading(true);
+    setError(false);
+    setReloadKey((key) => key + 1);
+  };
 
 
 
@@ -136,7 +160,11 @@ export default function StockPage() {
           <h2 className="font-semibold">Stock Batches</h2>
         </div>
 
-        {batches.length === 0 ? (
+        {loading ? (
+          <StockLoading />
+        ) : error ? (
+          <StockError onRetry={retry} />
+        ) : batches.length === 0 ? (
           <StockEmpty />
         ) : (
           <>

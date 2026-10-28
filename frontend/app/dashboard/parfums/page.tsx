@@ -7,8 +7,9 @@ import type { Brand } from "../brands/_components/brand";
 import BrandAvatar from "../brands/_components/BrandAvatar";
 import PerfumeBottleOutline from "../_components/PerfumeBottleOutline";
 import { formatPrice, type Parfum } from "./_components/parfum";
-import { ParfumsEmpty } from "./_components/ParfumStates";
-import { useRouter } from "next/navigation" 
+import { ParfumsEmpty, ParfumsError, ParfumsLoading } from "./_components/ParfumStates";
+import { useRouter } from "next/navigation"
+import { useToast } from "../../_components/Toast";
 
 
 export default function ParfumsPage() {
@@ -20,10 +21,17 @@ export default function ParfumsPage() {
   const [parfums, setParfums] = useState<Parfum[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
   const router = useRouter();
+  const toast = useToast();
+
+  // Loading / error state of the list (same approach as the decant bottles page).
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0); // +1 → the useEffect below runs again
 
 
   useEffect( () => {
     const fetchParfums = async () => {
+      try {
       const parfums = await fetch(`http://localhost:8000/api/parfum`, {
         method: "get",
         credentials: "include",
@@ -35,7 +43,8 @@ export default function ParfumsPage() {
       }
 
       if (!parfums.ok){
-        alert(`Error While fetching Data`);
+        toast.error(`Error While fetching Data`);
+        setError(true);
         return ;
       }
 
@@ -52,7 +61,8 @@ export default function ParfumsPage() {
       }
 
        if (!brands.ok){
-        alert(`Error While fetching Data`);
+        toast.error(`Error While fetching Data`);
+        setError(true);
         return ;
       }
 
@@ -60,13 +70,25 @@ export default function ParfumsPage() {
 
       return ;
 
-
+      } catch {
+        toast.error("Could not reach the server.");
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
     }
 
     fetchParfums();
 
 
-  }, []);
+  }, [reloadKey, router, toast]);
+
+  // "Try again" button of the error state.
+  const retry = () => {
+    setLoading(true);
+    setError(false);
+    setReloadKey((key) => key + 1);
+  };
 
 
   // Called when the on/off (Power) button of a perfume is clicked, in the table or on a mobile card.
@@ -89,7 +111,7 @@ export default function ParfumsPage() {
       return ;
     }
     if (!data.ok) {
-      alert(`Error While Modifying The Status ${data.status}`);
+      toast.error(`Error While Modifying The Status ${data.status}`);
       return ;
     }
 
@@ -183,7 +205,11 @@ export default function ParfumsPage() {
           <h2 className="font-semibold">All Perfumes</h2>
         </div>
 
-        {parfums.length === 0 ? (
+        {loading ? (
+          <ParfumsLoading />
+        ) : error ? (
+          <ParfumsError onRetry={retry} />
+        ) : parfums.length === 0 ? (
           <ParfumsEmpty />
         ) : (
           <>

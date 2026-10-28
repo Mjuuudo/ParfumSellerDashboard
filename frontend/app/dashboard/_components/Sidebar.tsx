@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LogOut, UserRound, X } from "lucide-react";
 import { navGroups, isActivePath } from "./navigation";
+import { useToast } from "../../_components/Toast";
 
 type SidebarProps = {
   // Called after a navigation link is clicked (used to close the mobile drawer).
@@ -15,6 +16,7 @@ type SidebarProps = {
 export default function Sidebar({ onNavigate, onClose }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const toast = useToast();
 
   // Same logout call and redirect that used to live in the dashboard top navigation.
   async function handleLogout( ) {
@@ -27,7 +29,7 @@ export default function Sidebar({ onNavigate, onClose }: SidebarProps) {
     });
 
     if (!data.ok) {
-      alert('Logout Opperation Not Success !')
+      toast.error('Logout Opperation Not Success !')
       return ;
     }
 

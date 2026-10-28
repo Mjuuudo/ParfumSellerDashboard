@@ -4,9 +4,10 @@ import Link from "next/link";
 import { Plus, Search, Pencil, Power, Tags } from "lucide-react";
 import type { Brand } from "./_components/brand";
 import BrandAvatar from "./_components/BrandAvatar";
-import { BrandsEmpty } from "./_components/BrandStates";
+import { BrandsEmpty, BrandsError, BrandsLoading } from "./_components/BrandStates";
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import { useToast } from "../../_components/Toast";
 
 export default function BrandsPage() {
 
@@ -15,10 +16,17 @@ export default function BrandsPage() {
   // Also add loading/error state and pick the matching component from ./_components/BrandStates.
   const [brands, setBrands] = useState<Brand[]>([]);
   const router = useRouter();
+  const toast = useToast();
+
+  // Loading / error state of the list (same approach as the decant bottles page).
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0); // +1 → the useEffect below runs again
 
   // useEffect()
   useEffect(() => {
     const fetchItems = async ( ) => {
+      try {
       const data = await fetch("http://localhost:8000/api/brand", {
         method: "get",
         credentials: "include",
@@ -26,22 +34,36 @@ export default function BrandsPage() {
       });
 
       if ( data.status === 401 ) {
-        alert ( `you need to Login !`);
+        toast.error( `you need to Login !`);
         router.push('/login');
         return ;
       }
       if (!data.ok) {
-        alert("Error While Fetching Data !");
+        toast.error("Error While Fetching Data !");
+        setError(true);
         return ;
       }
 
       const Brands = await data.json();
       setBrands(Brands);
 
+      } catch {
+        toast.error("Could not reach the server.");
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
     }
 
     fetchItems()
-  }, [])
+  }, [reloadKey, router, toast])
+
+  // "Try again" button of the error state.
+  const retry = () => {
+    setLoading(true);
+    setError(false);
+    setReloadKey((key) => key + 1);
+  };
 
 
   // Called when the on/off (Power) button of a brand is clicked, in the table or on a mobile card.
@@ -74,7 +96,7 @@ export default function BrandsPage() {
 
 
     if ( !data.ok ) {
-      alert (`error while Modifying Status ${data.status}`);
+      toast.error(`error while Modifying Status ${data.status}`);
       return ;
     }
 
@@ -145,7 +167,11 @@ export default function BrandsPage() {
           <h2 className="font-semibold">All Brands</h2>
         </div>
 
-        {brands.length === 0 ? (
+        {loading ? (
+          <BrandsLoading />
+        ) : error ? (
+          <BrandsError onRetry={retry} />
+        ) : brands.length === 0 ? (
           <BrandsEmpty />
         ) : (
           <>

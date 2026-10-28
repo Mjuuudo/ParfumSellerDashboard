@@ -7,6 +7,7 @@ import type { Brand } from "../../brands/_components/brand";
 import ParfumForm from "../_components/ParfumForm";
 import PerfumeBottleOutline from "../../_components/PerfumeBottleOutline";
 import { useRouter } from "next/navigation"
+import { useToast } from "../../../_components/Toast";
 
 
 export default function CreateParfumPage() {
@@ -15,8 +16,10 @@ export default function CreateParfumPage() {
   // brand dropdown has options (maybe only the active ones?).
   const [brands, setBrands] = useState<Brand[]>([]);
   const router =  useRouter();
+  const toast = useToast();
   useEffect(() => {
     const fetchBrands = async () => {
+      try {
       const data = await fetch("http://localhost:8000/api/brand", {
         method: "get",
         credentials: "include",
@@ -27,16 +30,19 @@ export default function CreateParfumPage() {
         return ;
       }
       if (!data.ok) {
-        alert(`Error Occured ! ${data.status}`);
+        toast.error(`Error Occured ! ${data.status}`);
         return ;
       }
 
       const result = await data.json();
       setBrands(result);
+      } catch {
+        toast.error("Could not reach the server.");
+      }
     }
 
     fetchBrands();
-  }, [])
+  }, [router, toast])
 
 
   async function handleCreateParfum(event: FormEvent<HTMLFormElement>) {
@@ -67,7 +73,7 @@ export default function CreateParfumPage() {
     });
 
     if (!data.ok){
-      alert("Error While Creating The Parfum");
+      toast.error("Error While Creating The Parfum");
       return ;
     }
 

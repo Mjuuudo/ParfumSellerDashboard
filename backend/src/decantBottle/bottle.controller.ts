@@ -1,4 +1,4 @@
-import { Controller, Body, UseGuards, Param, Post, Req, Get } from "@nestjs/common"
+import { Controller, Body, UseGuards, ParseIntPipe, Param, Post, Req, Get } from "@nestjs/common"
 import { AuthGuard } from "../Auth/auth.guard.js";
 import type { Request } from "express"
 import { BottleCreationDto } from "./dto/bottleCreation.dto.js";
@@ -34,9 +34,18 @@ export class BottleController{
     }
 
     @Get()
+    @UseGuards(AuthGuard)
     async test() {
 
         return await this.bottleService.listAllBottles();
+    }
+
+    @Get(':id')
+    @UseGuards(AuthGuard)
+    async getElemenetById(@Param('id', ParseIntPipe) id:number ) {
+
+
+        return await this.bottleService.getBottleById(id);
     }
 
 }

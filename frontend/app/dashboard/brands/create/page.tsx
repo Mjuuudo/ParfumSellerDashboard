@@ -5,10 +5,12 @@ import type { FormEvent } from "react";
 import { ArrowLeft, Tags } from "lucide-react";
 import BrandForm from "../_components/BrandForm";
 import { useRouter } from "next/navigation"
+import { useToast } from "../../../_components/Toast";
 
 export default function CreateBrandPage() {
 
   const router =  useRouter();
+  const toast = useToast();
 
 
   async function handleCreateBrand(event: FormEvent<HTMLFormElement>) {
@@ -38,7 +40,7 @@ export default function CreateBrandPage() {
     });
 
     if (!data.ok) {
-      alert(`Problem While Creating The Brand ${data.status}!`)
+      toast.error(`Problem While Creating The Brand ${data.status}!`)
       return ;
     }
 

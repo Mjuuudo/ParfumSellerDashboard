@@ -3,6 +3,8 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
+import { useToast } from "../../../../_components/Toast";
+import { LoadingCard, LoadErrorCard } from "../../../_components/LoadStateCards";
 
 export type User = {
   id: number;
@@ -22,6 +24,10 @@ export default function EditUserPage() {
   const router = useRouter();
   const [userHolder, setUserHolder] = useState<User>();
   const id = params.id;
+  const toast = useToast();
+  // true → the loading card turns into an error card with "Try again".
+  const [loadError, setLoadError] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0); // +1 → the useEffect below runs again
 
   useEffect(() => {
     const searchForUser = async () => {
@@ -48,19 +54,26 @@ export default function EditUserPage() {
         }
 
         if (!response.ok) {
-          alert("Unknown error happened");
+          toast.error("Unknown error happened");
+          setLoadError(true);
           return;
         }
 
         const user: User = await response.json();
         setUserHolder(user);
       } catch {
-        alert("Unable to load user information");
+        toast.error("Unable to load user information");
+        setLoadError(true);
       }
     };
 
     searchForUser();
-  }, [id, router]);
+  }, [id, router, toast, reloadKey]);
+
+  const retry = () => {
+    setLoadError(false);
+    setReloadKey((key) => key + 1);
+  };
 
   // UI wiring only. We'll implement the modification logic together.
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -94,7 +107,7 @@ export default function EditUserPage() {
     }
 
     if ( !Object.keys(updatedObject).length ) {
-      alert( "No Fields Were Changed" );
+      toast.info( "No Fields Were Changed", "Nothing to save" );
       return ;
     }
     
@@ -110,7 +123,7 @@ export default function EditUserPage() {
 
     if (!data.ok) {
       console.log(data.status);
-      alert( "Error Heppend While Fetching !" ) 
+      toast.error( "Error Heppend While Fetching !" )
     }
   }
 
@@ -139,12 +152,10 @@ export default function EditUserPage() {
           </a>
         </header>
 
-        {!userHolder ? (
-          <section className="rounded-2xl border border-slate-800 bg-slate-900 p-8 text-center">
-            <p className="text-slate-400">
-              Loading user information...
-            </p>
-          </section>
+        {loadError ? (
+          <LoadErrorCard what="this user" onRetry={retry} />
+        ) : !userHolder ? (
+          <LoadingCard label="Loading user information..." />
         ) : (
           <>
             {/* User summary */}
@@ -185,7 +196,7 @@ export default function EditUserPage() {
                     Personal Information
                   </h2>
                   <p className="mt-1 text-sm text-slate-400">
-                    Update the user's identification and contact details.
+                    Update the user&apos;s identification and contact details.
                   </p>
                 </div>
 

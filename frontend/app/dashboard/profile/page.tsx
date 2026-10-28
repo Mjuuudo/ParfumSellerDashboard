@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useToast } from "../../_components/Toast";
 
 
 type UserData = {
@@ -15,6 +16,7 @@ export default function ProfilePage() {
 
     const [userData, setUserData] = useState<UserData | null>(null);
     const router = useRouter();
+    const toast = useToast();
 
 
     async function handleProfileModification( ) {
@@ -31,7 +33,7 @@ export default function ProfilePage() {
       });
 
       if (!data.ok) {
-        alert('Logout Opperation Not Success !')
+        toast.error('Logout Opperation Not Success !')
         return ;
       }
 
@@ -40,6 +42,7 @@ export default function ProfilePage() {
 
     useEffect(() => {
         async function fetchUserData () {
+            try {
             const response = await fetch ("http://localhost:8000/api/user/me", {
                 method: "get",
                 credentials: "include",
@@ -54,17 +57,20 @@ export default function ProfilePage() {
               return;
             }
             if (!response.ok) {
-                alert("Failed to fetch user data. Please try again.");
+                toast.error("Failed to fetch user data. Please try again.");
                 return;
             }
 
             const userData = await response.json();
 
             setUserData(userData);
+            } catch {
+                toast.error("Could not reach the server.");
+            }
         }
 
         fetchUserData();
-    }, []);
+    }, [router, toast]);
 
 
 

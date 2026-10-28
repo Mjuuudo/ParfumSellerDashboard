@@ -8,11 +8,13 @@ import {
   Pencil,
   Trash2,
   Users as UsersIcon,
+  CircleAlert,
 } from "lucide-react";
 
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useToast } from "../../_components/Toast";
 
 
 type User = {
@@ -32,6 +34,12 @@ export default function UsersPage() {
 
   const [users, setUsers] = useState<User[]>([]);
   const router = useRouter();
+  const toast = useToast();
+
+  // Loading / error state of the table (same approach as the decant bottles page).
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0); // +1 → the useEffect below runs again
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -49,19 +57,30 @@ export default function UsersPage() {
 
         
         if (!response.ok) {
-          alert("Error Happened While Fetching Data");
+          toast.error("Error Happened While Fetching Data");
+          setError(true);
           return;
         }
 
         const usersData: User[] = await response.json();
         setUsers(usersData);
       } catch {
-        alert("Could not reach the server");
+        toast.error("Could not reach the server");
+        setError(true);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchUsers();
-  }, []);
+  }, [reloadKey, router, toast]);
+
+  // "Try again" button of the error state.
+  const retry = () => {
+    setLoading(true);
+    setError(false);
+    setReloadKey((key) => key + 1);
+  };
 
 
   // Called on every keystroke in the search input
@@ -186,9 +205,45 @@ return (
             </thead>
 
             <tbody className="divide-y divide-slate-800">
-              {users.length === 0 ? (
+              {loading ? (
+                Array.from({ length: 4 }).map((_, index) => (
+                  <tr key={index} aria-busy="true" className="animate-pulse">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-slate-800" />
+                        <div className="space-y-2">
+                          <div className="h-3 w-32 rounded bg-slate-800" />
+                          <div className="h-3 w-44 rounded bg-slate-800/70" />
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4"><div className="h-3 w-20 rounded bg-slate-800" /></td>
+                    <td className="px-6 py-4"><div className="h-6 w-20 rounded-full bg-slate-800" /></td>
+                    <td className="px-6 py-4"><div className="h-3 w-28 rounded bg-slate-800" /></td>
+                    <td className="px-6 py-4"><div className="h-6 w-16 rounded-full bg-slate-800" /></td>
+                    <td className="px-6 py-4" />
+                  </tr>
+                ))
+              ) : error ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-10 text-center text-slate-500">
+                  <td colSpan={6} role="alert" className="px-6 py-14 text-center">
+                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl border border-red-500/20 bg-red-500/10 text-red-400">
+                      <CircleAlert size={26} />
+                    </div>
+                    <p className="mt-4 font-semibold text-slate-100">Couldn&apos;t load users</p>
+                    <p className="mt-1 text-sm text-slate-400">Something went wrong while contacting the server.</p>
+                    <button
+                      type="button"
+                      onClick={retry}
+                      className="mt-6 rounded-lg border border-slate-700 px-4 py-2.5 text-sm font-medium text-slate-300 transition hover:bg-slate-800"
+                    >
+                      Try again
+                    </button>
+                  </td>
+                </tr>
+              ) : users.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-10 text-center text-slate-500">
                     No users found.
                   </td>
                 </tr>

@@ -17,7 +17,6 @@ import BrandAvatar from "../../brands/_components/BrandAvatar";
 import { formatPrice } from "../../parfums/_components/parfum";
 import {
   consumedMl,
-  formatDate,
   formatDateTime,
   getBottleStatus,
   remainingPercent,
@@ -54,6 +53,7 @@ export default function DecantBottleDetailsPage() {
     .filter((op) => op.decantBottleId === bottle.id)
     .sort((a, b) => b.performedAt.localeCompare(a.performedAt));
   const batch = bottle.stockBatch;
+  const parfum = batch.parfum;
 
   return (
     <div className="mx-auto max-w-5xl space-y-8">
@@ -63,14 +63,12 @@ export default function DecantBottleDetailsPage() {
 
       {/* Header */}
       <section className="flex flex-col gap-5 rounded-2xl border border-slate-800 bg-slate-900 p-6 sm:flex-row sm:items-center sm:p-8">
-        <BrandAvatar name={bottle.parfum?.brand?.name ?? ""} image={bottle.parfum?.brand?.image ?? null} size="lg" />
+        <BrandAvatar name={parfum.brand.name} image={null} size="lg" />
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold tracking-widest text-amber-400">BOTTLE #{bottle.id}</p>
-          <h1 className="mt-1 truncate text-2xl font-bold tracking-tight sm:text-3xl">
-            {bottle.parfum?.name ?? `Perfume #${bottle.parfumId}`}
-          </h1>
+          <h1 className="mt-1 truncate text-2xl font-bold tracking-tight sm:text-3xl">{parfum.name}</h1>
           <p className="mt-1 text-sm text-slate-400">
-            {bottle.parfum?.brand?.name ?? "—"} · {bottle.initialVolumeMl} ml original bottle
+            {parfum.brand.name} · {bottle.initialVolumeMl} ml original bottle
           </p>
         </div>
         <BottleStatusBadge status={status} />
@@ -124,16 +122,15 @@ export default function DecantBottleDetailsPage() {
             </h2>
             <dl className="mt-4 space-y-3 text-sm">
               <InfoRow label="Batch" value={`#${bottle.stockBatchId}`} />
-              {batch && <InfoRow label="Received" value={formatDate(batch.receivedAt)} />}
-              {batch && <InfoRow label="Bottles in batch" value={batch.quantity} />}
-              {batch && <InfoRow label="Cost per bottle" value={formatPrice(batch.purchaseCostPerBottle)} />}
-              {batch && (
-                <InfoRow
-                  label="Cost per ml"
-                  value={`${(batch.purchaseCostPerBottle / bottle.initialVolumeMl).toFixed(1)} MAD`}
-                  hint="calculated"
-                />
-              )}
+              <InfoRow label="Received by" value={batch.receivedByUser.username} />
+              <InfoRow label="Bottles in batch" value={batch.quantity} />
+              <InfoRow label="Still sealed" value={batch.unusedQuantity} />
+              <InfoRow label="Cost per bottle" value={formatPrice(batch.purchaseCostPerBottle)} />
+              <InfoRow
+                label="Cost per ml"
+                value={`${(batch.purchaseCostPerBottle / bottle.initialVolumeMl).toFixed(1)} MAD`}
+                hint="calculated"
+              />
             </dl>
           </section>
 
@@ -143,9 +140,9 @@ export default function DecantBottleDetailsPage() {
               <Lock size={18} className="text-sky-400" />
               Reservation
             </h2>
-            {bottle.reservedBy ? (
+            {bottle.reservedById !== null ? (
               <dl className="mt-4 space-y-3 text-sm">
-                <InfoRow label="Reserved by" value={`${bottle.reservedBy.firstName} ${bottle.reservedBy.lastName}`} />
+                <InfoRow label="Reserved by" value={`User #${bottle.reservedById}`} />
                 {bottle.reservedAt && <InfoRow label="Since" value={formatDateTime(bottle.reservedAt)} />}
               </dl>
             ) : (

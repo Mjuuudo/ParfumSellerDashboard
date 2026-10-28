@@ -6,6 +6,7 @@ import { ArrowLeft, PackagePlus } from "lucide-react";
 import type { Parfum } from "../../parfums/_components/parfum";
 import StockForm from "../_components/StockForm";
 import { useRouter } from "next/navigation"
+import { useToast } from "../../../_components/Toast";
 
 export default function RecordDeliveryPage() {
 
@@ -13,9 +14,11 @@ export default function RecordDeliveryPage() {
   // perfume dropdown has options (only the active ones?).
   const [parfums, setParfums] = useState<Parfum[]>([]);
   const router = useRouter();
+  const toast = useToast();
 
   useEffect( () => {
     const  fetchData = async () => {
+      try {
       const data = await fetch(`http://localhost:8000/api/parfum`, {
         method: "get",
         credentials: "include"
@@ -27,16 +30,19 @@ export default function RecordDeliveryPage() {
       }
 
       if (!data.ok) {
-        alert(`Error While Fetching Data !`);
+        toast.error(`Error While Fetching Data !`);
         return ;
       }
 
       setParfums( await data.json() );
+      } catch {
+        toast.error("Could not reach the server.");
+      }
     }
 
 
     fetchData();
-  }, [])
+  }, [router, toast])
 
 
   async function handleRecordDelivery(event: FormEvent<HTMLFormElement>) {
@@ -73,7 +79,7 @@ export default function RecordDeliveryPage() {
     }
 
     if (!data.ok){
-      alert("Error While Creating New Stock Batch");
+      toast.error("Error While Creating New Stock Batch");
       return ;
     }
 

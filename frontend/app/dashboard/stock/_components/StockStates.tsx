@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { Boxes, CircleAlert, PackagePlus } from "lucide-react";
 
-// Ready-made designs for the list page. The page only renders <StockEmpty /> for now;
-// TODO(you): once you fetch the batches, decide which one to show (loading → error → empty → table).
+// States of the stock list: loading → error → empty → no search results.
 
 export function StockLoading() {
   return (
@@ -53,7 +52,7 @@ export function StockNoResults() {
   );
 }
 
-export function StockError({ message }: { message?: string }) {
+export function StockError({ message, onRetry }: { message?: string; onRetry?: () => void }) {
   return (
     <div role="alert" className="flex flex-col items-center px-6 py-14 text-center">
       <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-red-500/20 bg-red-500/10 text-red-400">
@@ -63,9 +62,9 @@ export function StockError({ message }: { message?: string }) {
       <p className="mt-1 max-w-sm text-sm text-slate-400">
         {message ?? "Something went wrong while contacting the server."}
       </p>
-      {/* TODO(you): add an onClick that runs your fetch again. */}
       <button
         type="button"
+        onClick={onRetry}
         className="mt-6 rounded-lg border border-slate-700 px-4 py-2.5 text-sm font-medium text-slate-300 transition hover:bg-slate-800"
       >
         Try again

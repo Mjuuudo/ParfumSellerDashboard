@@ -110,21 +110,27 @@ export const mockBottles: DecantBottle[] = rawBottles.map((raw) => {
   const consumed = consumptions.reduce((sum, op) => sum + op.quantityMl, 0);
   const reversed = ops.filter((op) => op.oppType === "REVERSAL").reduce((sum, op) => sum + op.quantityMl, 0);
   const lastDecantedAt = consumptions.length ? consumptions[consumptions.length - 1].performedAt : null;
-  const reservedBy = users.find((user) => user.id === raw.reservedById) ?? null;
+  const receiver = users.find((user) => user.id === batch.receivedBy)!;
+  const opened = rawBottles.filter((b) => b.stockBatchId === batch.id).length;
 
+  // Same shape as GET /api/bottle
   return {
     ...raw,
     initialVolumeMl: parfum.originalVolume,
     remainingVolumeMl: parfum.originalVolume - consumed + reversed,
     lastDecantedAt,
     updatedAt: ops.length ? ops[ops.length - 1].performedAt : raw.createdAt,
-    parfum: { id: parfum.id, name: parfum.name, originalVolume: parfum.originalVolume, brand: parfum.brand },
     stockBatch: {
-      id: batch.id,
       quantity: batch.quantity,
-      receivedAt: batch.receivedAt,
+      unusedQuantity: Math.max(batch.quantity - opened, 0),
       purchaseCostPerBottle: batch.purchaseCostPerBottle,
+      parfum: {
+        name: parfum.name,
+        originalVolume: parfum.originalVolume,
+        completePrice: parfum.completePrice,
+        brand: { name: parfum.brand?.name ?? "" },
+      },
+      receivedByUser: { id: receiver.id, username: receiver.username, email: `${receiver.username}@example.com` },
     },
-    reservedBy,
   };
 });

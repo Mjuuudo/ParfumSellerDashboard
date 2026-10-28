@@ -1,36 +1,39 @@
 // Types + derived values for the Decant Bottles screens.
 //
 // A DecantBottle is an ORIGINAL perfume bottle that was opened to sell decants from,
-// not a 10/20 ml retail decant. Fields mirror backend/src/prisma/contract.prisma.
+// not a 10/20 ml retail decant.
+//
+// Shape = exactly what GET /api/bottle (list) and GET /api/bottle/:id return
+// (see listAllBottles / getBottleById in backend/src/decantBottle/bottle.service.ts).
+// Dates arrive as ISO strings.
 
 export type DecantBottle = {
-  // ── Existing DB fields (DecantBottle model) ──
+  // ── DecantBottle columns ──
   id: number;
   parfumId: number;
   stockBatchId: number;
   initialVolumeMl: number; // set by the backend from Parfum.originalVolume when opened
   remainingVolumeMl: number; // starts equal to initialVolumeMl, goes down with each decant sold
   reservedAt: string | null;
-  reservedById: number | null;
+  reservedById: number | null; // only the id: the `reservedBy` user isn't included by the backend
   lastDecantedAt: string | null;
   isActive: boolean;
   createdAt: string; // = the date the bottle was opened
   updatedAt: string;
 
-  // ── Relations the backend would need to include ──
-  parfum?: {
-    id: number;
-    name: string;
-    originalVolume: number;
-    brand?: { name: string; image: string | null };
-  };
-  stockBatch?: {
-    id: number;
+  // ── Included by the backend: the batch, with the perfume nested INSIDE it ──
+  stockBatch: {
     quantity: number;
-    receivedAt: string;
+    unusedQuantity: number;
     purchaseCostPerBottle: number;
+    parfum: {
+      name: string;
+      originalVolume: number;
+      completePrice: number;
+      brand: { name: string }; // no `image` selected → avatars show the placeholder
+    };
+    receivedByUser: { id: number; username: string; email: string };
   };
-  reservedBy?: { id: number; firstName: string; lastName: string; username: string } | null;
 };
 
 // Mirrors the DecantOpperation model: one decant poured from (or given back to) a bottle.

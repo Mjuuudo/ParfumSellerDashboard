@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import { PackageOpen, Search, FlaskConical, ChevronRight, UserRound, Filter } from "lucide-react";
 import BrandAvatar from "../brands/_components/BrandAvatar";
 import {
@@ -16,13 +17,12 @@ import {
 } from "./_components/decantBottle";
 import VolumeBar from "./_components/VolumeBar";
 import BottleStatusBadge from "./_components/BottleStatusBadge";
-import PrototypeNotice from "./_components/PrototypeNotice";
 import { DecantsEmpty, DecantsError, DecantsLoading, DecantsNoResults } from "./_components/DecantStates";
-// ⚠ Prototype: replace with a fetch of the real endpoint once it exists.
-import { mockBottles } from "./_mock/decantMocks";
+import { useToast } from "../../_components/Toast";
+// import { useRouter } from "next/navigation"
+
 
 type VolumeFilter = "all" | "high" | "medium" | "low";
-type PreviewState = "data" | "loading" | "empty" | "error";
 
 const volumeFilters: { value: VolumeFilter; label: string }[] = [
   { value: "all", label: "Any volume" },
@@ -32,16 +32,63 @@ const volumeFilters: { value: VolumeFilter; label: string }[] = [
 ];
 
 export default function DecantBottlesPage() {
+  const router = useRouter();
+  const toast = useToast();
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<BottleStatus | "all">("all");
   const [volumeFilter, setVolumeFilter] = useState<VolumeFilter>("all");
-  // Prototype only: lets you preview each state of the list.
-  const [preview, setPreview] = useState<PreviewState>("data");
 
-  const bottles: DecantBottle[] = preview === "empty" ? [] : mockBottles;
+  // ── Data from GET /api/bottle ──
+  const [bottles, setBottles] = useState<DecantBottle[]>([]);
+  const [loading, setLoading] = useState(true); // true → shows <DecantsLoading />
+  const [error, setError] = useState(false); // true → shows <DecantsError /> with a Retry button
+  const [reloadKey, setReloadKey] = useState(0); // +1 → the useEffect below runs again
+
+  useEffect(() => {
+  const fetchBottles = async () => {
+    try {
+      const data = await fetch(`http://localhost:8000/api/bottle`, {
+        method: "get",
+        credentials: "include",
+       
+      });
+
+      if (data.status === 401 || data.status === 403) {
+        router.push('/login');
+        return ;
+      }
+
+      if (!data.ok) {
+        toast.error(`Error While Fetching The Bottles ${data.status}`);
+        setError(true);
+        return ;
+      }
+
+      const result: DecantBottle[] = await data.json();
+      setBottles(result);
+    } catch {
+      toast.error("Could not reach the server.");
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+    fetchBottles();
+  }, [reloadKey, router, toast]);
+
+  // "Retry" button of the error state: back to loading, then fetch again.
+  const retry = () => {
+    setLoading(true);
+    setError(false);
+    setReloadKey((key) => key + 1);
+  };
+
+  const ready = !loading && !error;
 
   const visibleBottles = bottles.filter((bottle) => {
-    const text = `${bottle.parfum?.name ?? ""} ${bottle.parfum?.brand?.name ?? ""}`.toLowerCase();
+    const parfum = bottle.stockBatch.parfum;
+    const text = `${parfum.name} ${parfum.brand.name}`.toLowerCase();
     if (query && !text.includes(query.trim().toLowerCase())) return false;
     if (statusFilter !== "all" && getBottleStatus(bottle) !== statusFilter) return false;
     const percent = remainingPercent(bottle);
@@ -65,28 +112,6 @@ export default function DecantBottlesPage() {
 
   return (
     <div className="space-y-8">
-      <PrototypeNotice
-        action={
-          <div className="flex shrink-0 items-center gap-1 rounded-lg bg-slate-950/60 p-1 text-xs">
-            {(["data", "loading", "empty", "error"] as PreviewState[]).map((state) => (
-              <button
-                key={state}
-                type="button"
-                onClick={() => setPreview(state)}
-                aria-pressed={preview === state}
-                className={`rounded-md px-2.5 py-1 capitalize transition ${
-                  preview === state ? "bg-sky-500/25 text-sky-200" : "text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                {state}
-              </button>
-            ))}
-          </div>
-        }
-      >
-        Bottles below are examples. Use the switch to preview each list state.
-      </PrototypeNotice>
-
       {/* Heading */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
@@ -107,14 +132,14 @@ export default function DecantBottlesPage() {
 
       {/* Summary cards */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <SummaryCard label="Bottles in use" value={preview === "data" ? inUse.length : "—"} />
+        <SummaryCard label="Bottles in use" value={ready ? inUse.length : "—"} />
         <SummaryCard
           label="Perfume left to decant"
-          value={preview === "data" ? `${totalRemaining.toLocaleString()} ml` : "—"}
+          value={ready ? `${totalRemaining.toLocaleString()} ml` : "—"}
           accent="text-amber-400"
         />
-        <SummaryCard label="Low or empty" value={preview === "data" ? lowOrEmpty : "—"} accent="text-red-400" />
-        <SummaryCard label="Reserved" value={preview === "data" ? reserved : "—"} accent="text-sky-400" />
+        <SummaryCard label="Low or empty" value={ready ? lowOrEmpty : "—"} accent="text-red-400" />
+        <SummaryCard label="Reserved" value={ready ? reserved : "—"} accent="text-sky-400" />
       </div>
 
       {/* Search + filters */}
@@ -160,10 +185,10 @@ export default function DecantBottlesPage() {
           <h2 className="font-semibold">Opened Bottles</h2>
         </div>
 
-        {preview === "loading" ? (
+        {loading ? (
           <DecantsLoading />
-        ) : preview === "error" ? (
-          <DecantsError onRetry={() => setPreview("data")} />
+        ) : error ? (
+          <DecantsError onRetry={retry} />
         ) : bottles.length === 0 ? (
           <DecantsEmpty />
         ) : visibleBottles.length === 0 ? (
@@ -256,7 +281,7 @@ export default function DecantBottlesPage() {
           </>
         )}
 
-        {preview === "data" && bottles.length > 0 && (
+        {ready && bottles.length > 0 && (
           <div className="border-t border-slate-800 px-6 py-4 text-xs text-slate-500">
             Showing {visibleBottles.length} of {bottles.length} bottles
           </div>
@@ -306,13 +331,15 @@ function FilterSelect({
 }
 
 function PerfumeCell({ bottle }: { bottle: DecantBottle }) {
+  const parfum = bottle.stockBatch.parfum;
+
   return (
     <div className="flex min-w-0 items-center gap-3">
-      <BrandAvatar name={bottle.parfum?.brand?.name ?? ""} image={bottle.parfum?.brand?.image ?? null} />
+      <BrandAvatar name={parfum.brand.name} image={null} />
       <div className="min-w-0">
-        <p className="truncate font-medium text-slate-100">{bottle.parfum?.name ?? `Perfume #${bottle.parfumId}`}</p>
+        <p className="truncate font-medium text-slate-100">{parfum.name}</p>
         <p className="truncate text-xs text-slate-500">
-          {bottle.parfum?.brand?.name ?? "—"} · {bottle.initialVolumeMl} ml bottle
+          {parfum.brand.name} · {bottle.initialVolumeMl} ml bottle
         </p>
       </div>
     </div>
@@ -320,12 +347,13 @@ function PerfumeCell({ bottle }: { bottle: DecantBottle }) {
 }
 
 function ReservedBy({ bottle }: { bottle: DecantBottle }) {
-  if (!bottle.reservedBy) return <span className="text-slate-600">Not reserved</span>;
+  if (bottle.reservedById === null) return <span className="text-slate-600">Not reserved</span>;
 
+  // The backend only sends the id (no `reservedBy` include), so no name to show yet.
   return (
     <span className="inline-flex items-center gap-1.5 text-sky-300">
       <UserRound size={14} className="shrink-0" />
-      {bottle.reservedBy.firstName} {bottle.reservedBy.lastName}
+      User #{bottle.reservedById}
     </span>
   );
 }

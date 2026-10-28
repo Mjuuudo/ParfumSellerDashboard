@@ -5,11 +5,13 @@ import { useParams, useRouter } from "next/navigation";
 import type { FormEvent } from "react";
 import { ArrowLeft } from "lucide-react";
 import BrandForm from "../../_components/BrandForm";
+import { useToast } from "../../../../_components/Toast";
 
 export default function EditBrandPage() {
   const params = useParams<{ id: string }>();
   const id = params.id;
   const router = useRouter();
+  const toast = useToast();
 
   // TODO(you): fetch the brand with this id in a useEffect, keep it in state, and
   // pass it to <BrandForm brand={...} /> so the fields are pre-filled.
@@ -46,7 +48,7 @@ export default function EditBrandPage() {
 
     console.log(updatedObject);
     if (!data.ok) {
-      alert (`AN Error Occured While Modifying Data ${data.status}`);
+      toast.error(`AN Error Occured While Modifying Data ${data.status}`);
       return
     }
     
