@@ -8,6 +8,7 @@ import {
   ChartNoAxesCombined,
   UserCog,
   FlaskConical,
+  ClipboardList,
   type LucideIcon,
 } from "lucide-react";
 
@@ -39,9 +40,10 @@ export const navGroups: NavGroup[] = [
     title: "Operations",
     items: [
       { label: "Inventory", icon: Boxes, href: "/dashboard/stock" },
+      { label: "Stock & Reservations", icon: ClipboardList, href: "/dashboard/reservations" },
       { label: "Decant Bottles", icon: FlaskConical, href: "/dashboard/decants" },
-      { label: "Customers", icon: UsersRound },
-      { label: "Orders", icon: ShoppingCart },
+      { label: "Customers", icon: UsersRound, href: "/dashboard/customers" },
+      { label: "Orders", icon: ShoppingCart, href: "/dashboard/orders" },
     ],
   },
   {

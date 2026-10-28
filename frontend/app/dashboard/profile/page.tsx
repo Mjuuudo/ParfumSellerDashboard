@@ -53,6 +53,7 @@ export default function ProfilePage() {
 
             console.log(response.status);
             if (response.status === 401) {
+              toast.info(`You Need To Authenticate Before Proceed !`, `Authentication Required`);
               router.push("/login");
               return;
             }

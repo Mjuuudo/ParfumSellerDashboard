@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'03097e4092520b0341176b3ca0e7c1fd2f0682d7dffb12d6286fc6c0b4794193'>;
+  StorageHashBase<'c20cd972509d72c645850bd1d17ef16a59874ce38010529deb8cbf18ce858d88'>;
 export type ExecutionHash =
-  ExecutionHashBase<'7cfd33a50961b5cc96407c6d6170117f9eddd327b45504a4d979ced8125b67aa'>;
+  ExecutionHashBase<'aefc8d59ce5e309b4197d30f139bcc131c993b83fc7493d502a400fe98914454'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -278,6 +278,7 @@ export type FieldOutputTypes = {
       readonly remainingVolumeMl: CodecTypes['pg/int4@1']['output'];
       readonly reservedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly reservedById: CodecTypes['pg/int4@1']['output'] | null;
+      readonly reservedVolumeMl: CodecTypes['pg/int4@1']['output'];
       readonly stockBatchId: CodecTypes['pg/int4@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
@@ -349,7 +350,21 @@ export type FieldOutputTypes = {
       readonly quantity: CodecTypes['pg/int4@1']['output'];
       readonly receivedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly receivedBy: CodecTypes['pg/int4@1']['output'];
+      readonly reservedQuantity: CodecTypes['pg/int4@1']['output'];
       readonly unusedQuantity: CodecTypes['pg/int4@1']['output'];
+    };
+    readonly StockReservation: {
+      readonly consumedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly decantBottleId: CodecTypes['pg/int4@1']['output'] | null;
+      readonly id: CodecTypes['pg/int4@1']['output'];
+      readonly orderItemId: CodecTypes['pg/int4@1']['output'];
+      readonly quantity: CodecTypes['pg/int4@1']['output'] | null;
+      readonly quantityMl: CodecTypes['pg/int4@1']['output'] | null;
+      readonly releasedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly status: 'RESERVED' | 'CONSUMED' | 'RELEASED';
+      readonly stockBatchId: CodecTypes['pg/int4@1']['output'] | null;
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly User: {
       readonly Role: 'OWNER' | 'EMPLOYEE';
@@ -397,6 +412,7 @@ export type FieldInputTypes = {
       readonly remainingVolumeMl: CodecTypes['pg/int4@1']['input'];
       readonly reservedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly reservedById: CodecTypes['pg/int4@1']['input'] | null;
+      readonly reservedVolumeMl: CodecTypes['pg/int4@1']['input'];
       readonly stockBatchId: CodecTypes['pg/int4@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
@@ -468,7 +484,21 @@ export type FieldInputTypes = {
       readonly quantity: CodecTypes['pg/int4@1']['input'];
       readonly receivedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly receivedBy: CodecTypes['pg/int4@1']['input'];
+      readonly reservedQuantity: CodecTypes['pg/int4@1']['input'];
       readonly unusedQuantity: CodecTypes['pg/int4@1']['input'];
+    };
+    readonly StockReservation: {
+      readonly consumedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly decantBottleId: CodecTypes['pg/int4@1']['input'] | null;
+      readonly id: CodecTypes['pg/int4@1']['input'];
+      readonly orderItemId: CodecTypes['pg/int4@1']['input'];
+      readonly quantity: CodecTypes['pg/int4@1']['input'] | null;
+      readonly quantityMl: CodecTypes['pg/int4@1']['input'] | null;
+      readonly releasedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly status: 'RESERVED' | 'CONSUMED' | 'RELEASED';
+      readonly stockBatchId: CodecTypes['pg/int4@1']['input'] | null;
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly User: {
       readonly Role: 'OWNER' | 'EMPLOYEE';
@@ -516,6 +546,7 @@ export type StorageColumnTypes = {
       readonly remainingVolumeMl: CodecTypes['pg/int4@1']['output'];
       readonly reservedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly reservedById: CodecTypes['pg/int4@1']['output'] | null;
+      readonly reservedVolumeMl: CodecTypes['pg/int4@1']['output'];
       readonly stockBatchId: CodecTypes['pg/int4@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
@@ -587,7 +618,21 @@ export type StorageColumnTypes = {
       readonly quantity: CodecTypes['pg/int4@1']['output'];
       readonly receivedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly receivedBy: CodecTypes['pg/int4@1']['output'];
+      readonly reservedQuantity: CodecTypes['pg/int4@1']['output'];
       readonly unusedQuantity: CodecTypes['pg/int4@1']['output'];
+    };
+    readonly StockReservation: {
+      readonly consumedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly decantBottleId: CodecTypes['pg/int4@1']['output'] | null;
+      readonly id: CodecTypes['pg/int4@1']['output'];
+      readonly orderItemId: CodecTypes['pg/int4@1']['output'];
+      readonly quantity: CodecTypes['pg/int4@1']['output'] | null;
+      readonly quantityMl: CodecTypes['pg/int4@1']['output'] | null;
+      readonly releasedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly status: 'RESERVED' | 'CONSUMED' | 'RELEASED';
+      readonly stockBatchId: CodecTypes['pg/int4@1']['output'] | null;
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly User: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -635,6 +680,7 @@ export type StorageColumnInputTypes = {
       readonly remainingVolumeMl: CodecTypes['pg/int4@1']['input'];
       readonly reservedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly reservedById: CodecTypes['pg/int4@1']['input'] | null;
+      readonly reservedVolumeMl: CodecTypes['pg/int4@1']['input'];
       readonly stockBatchId: CodecTypes['pg/int4@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
@@ -706,7 +752,21 @@ export type StorageColumnInputTypes = {
       readonly quantity: CodecTypes['pg/int4@1']['input'];
       readonly receivedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly receivedBy: CodecTypes['pg/int4@1']['input'];
+      readonly reservedQuantity: CodecTypes['pg/int4@1']['input'];
       readonly unusedQuantity: CodecTypes['pg/int4@1']['input'];
+    };
+    readonly StockReservation: {
+      readonly consumedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly decantBottleId: CodecTypes['pg/int4@1']['input'] | null;
+      readonly id: CodecTypes['pg/int4@1']['input'];
+      readonly orderItemId: CodecTypes['pg/int4@1']['input'];
+      readonly quantity: CodecTypes['pg/int4@1']['input'] | null;
+      readonly quantityMl: CodecTypes['pg/int4@1']['input'] | null;
+      readonly releasedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly status: 'RESERVED' | 'CONSUMED' | 'RELEASED';
+      readonly stockBatchId: CodecTypes['pg/int4@1']['input'] | null;
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly User: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -758,6 +818,7 @@ export namespace Models {
     remainingVolumeMl: CodecTypes['pg/int4@1']['output'];
     reservedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
     reservedById: CodecTypes['pg/int4@1']['output'] | null;
+    reservedVolumeMl: CodecTypes['pg/int4@1']['output'];
     stockBatchId: CodecTypes['pg/int4@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     decantOpperation: public_DecantOpperation[];
@@ -765,8 +826,14 @@ export namespace Models {
     parfum: public_Parfum;
     reservedBy: public_User | null;
     stockBatch: public_StockBatch;
+    stockReservations: public_StockReservation[];
     readonly [RelationKeys]?:
-      'decantOpperation' | 'orderItemConsumption' | 'parfum' | 'reservedBy' | 'stockBatch';
+      | 'decantOpperation'
+      | 'orderItemConsumption'
+      | 'parfum'
+      | 'reservedBy'
+      | 'stockBatch'
+      | 'stockReservations';
   };
   export type public_DecantOpperation = {
     decantBottleId: CodecTypes['pg/int4@1']['output'];
@@ -838,7 +905,8 @@ export namespace Models {
     order: public_Order;
     orderItemsConsumptions: public_OrderitemConsumption[];
     parfum: public_Parfum;
-    readonly [RelationKeys]?: 'order' | 'orderItemsConsumptions' | 'parfum';
+    stockReservations: public_StockReservation[];
+    readonly [RelationKeys]?: 'order' | 'orderItemsConsumptions' | 'parfum' | 'stockReservations';
   };
   export type public_OrderitemConsumption = {
     consumedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -872,11 +940,30 @@ export namespace Models {
     quantity: CodecTypes['pg/int4@1']['output'];
     receivedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     receivedBy: CodecTypes['pg/int4@1']['output'];
+    reservedQuantity: CodecTypes['pg/int4@1']['output'];
     unusedQuantity: CodecTypes['pg/int4@1']['output'];
     decantBottles: public_DecantBottle[];
     parfum: public_Parfum;
     receivedByUser: public_User;
-    readonly [RelationKeys]?: 'decantBottles' | 'parfum' | 'receivedByUser';
+    stockReservations: public_StockReservation[];
+    readonly [RelationKeys]?: 'decantBottles' | 'parfum' | 'receivedByUser' | 'stockReservations';
+  };
+  export type public_StockReservation = {
+    consumedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    decantBottleId: CodecTypes['pg/int4@1']['output'] | null;
+    id: CodecTypes['pg/int4@1']['output'];
+    orderItemId: CodecTypes['pg/int4@1']['output'];
+    quantity: CodecTypes['pg/int4@1']['output'] | null;
+    quantityMl: CodecTypes['pg/int4@1']['output'] | null;
+    releasedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+    status: 'RESERVED' | 'CONSUMED' | 'RELEASED';
+    stockBatchId: CodecTypes['pg/int4@1']['output'] | null;
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    decantBottle: public_DecantBottle | null;
+    orderItem: public_OrderItem;
+    stockBatch: public_StockBatch | null;
+    readonly [RelationKeys]?: 'decantBottle' | 'orderItem' | 'stockBatch';
   };
   export type public_User = {
     Role: 'OWNER' | 'EMPLOYEE';
@@ -919,6 +1006,7 @@ export declare const models: {
     OrderitemConsumption: Models.public_OrderitemConsumption;
     Parfum: Models.public_Parfum;
     StockBatch: Models.public_StockBatch;
+    StockReservation: Models.public_StockReservation;
     User: Models.public_User;
   };
 };
@@ -1100,6 +1188,15 @@ type ContractBase = Omit<
                   readonly nativeType: 'int4';
                   readonly codecId: 'pg/int4@1';
                   readonly nullable: true;
+                };
+                readonly reservedVolumeMl: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/int4@1', 0>;
+                  };
                 };
                 readonly stockBatchId: {
                   readonly nativeType: 'int4';
@@ -1805,6 +1902,15 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/int4@1';
                   readonly nullable: false;
                 };
+                readonly reservedQuantity: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/int4@1', 0>;
+                  };
+                };
                 readonly unusedQuantity: {
                   readonly nativeType: 'int4';
                   readonly codecId: 'pg/int4@1';
@@ -1849,6 +1955,134 @@ type ContractBase = Omit<
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'User';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly StockReservation: {
+              columns: {
+                readonly consumedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: true;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly decantBottleId: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: true;
+                };
+                readonly id: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'function';
+                    readonly expression: 'autoincrement()';
+                  };
+                };
+                readonly orderItemId: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                };
+                readonly quantity: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: true;
+                };
+                readonly quantityMl: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: true;
+                };
+                readonly releasedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: true;
+                };
+                readonly status: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'RESERVED'>;
+                  };
+                };
+                readonly stockBatchId: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: true;
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'StockReservation_decantBottleId_idx_a6360438';
+                  readonly prefix: 'StockReservation_decantBottleId_idx';
+                  readonly columns: readonly ['decantBottleId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'StockReservation_orderItemId_idx_99e2d9f7';
+                  readonly prefix: 'StockReservation_orderItemId_idx';
+                  readonly columns: readonly ['orderItemId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'StockReservation_stockBatchId_idx_a1b7aade';
+                  readonly prefix: 'StockReservation_stockBatchId_idx';
+                  readonly columns: readonly ['stockBatchId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'StockReservation';
+                    readonly columns: readonly ['orderItemId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'OrderItem';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'StockReservation';
+                    readonly columns: readonly ['stockBatchId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'StockBatch';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'StockReservation';
+                    readonly columns: readonly ['decantBottleId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'DecantBottle';
                     readonly columns: readonly ['id'];
                   };
                 },
@@ -1948,6 +2182,10 @@ type ContractBase = Omit<
               readonly kind: 'valueSet';
               readonly values: readonly ['COMPLETE', 'DECANT_10ML', 'DECANT_20ML'];
             };
+            readonly ReservationStatus: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['RESERVED', 'CONSUMED', 'RELEASED'];
+            };
             readonly RoleEnum: {
               readonly kind: 'valueSet';
               readonly values: readonly ['OWNER', 'EMPLOYEE'];
@@ -1987,6 +2225,10 @@ type ContractBase = Omit<
     readonly StockBatch: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'StockBatch';
+    };
+    readonly StockReservation: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'StockReservation';
     };
     readonly User: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
   };
@@ -2169,6 +2411,10 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
               };
+              readonly reservedVolumeMl: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
               readonly stockBatchId: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
@@ -2237,6 +2483,17 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['id'];
                 };
               };
+              readonly stockReservations: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'StockReservation';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['decantBottleId'];
+                };
+              };
             };
             readonly storage: {
               readonly table: 'DecantBottle';
@@ -2251,6 +2508,7 @@ type ContractBase = Omit<
                 readonly remainingVolumeMl: { readonly column: 'remainingVolumeMl' };
                 readonly reservedAt: { readonly column: 'reservedAt' };
                 readonly reservedById: { readonly column: 'reservedById' };
+                readonly reservedVolumeMl: { readonly column: 'reservedVolumeMl' };
                 readonly stockBatchId: { readonly column: 'stockBatchId' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
               };
@@ -2672,6 +2930,17 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['id'];
                 };
               };
+              readonly stockReservations: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'StockReservation';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['orderItemId'];
+                };
+              };
             };
             readonly storage: {
               readonly table: 'OrderItem';
@@ -2877,6 +3146,10 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
               };
+              readonly reservedQuantity: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
               readonly unusedQuantity: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
@@ -2915,6 +3188,17 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['id'];
                 };
               };
+              readonly stockReservations: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'StockReservation';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['stockBatchId'];
+                };
+              };
             };
             readonly storage: {
               readonly table: 'StockBatch';
@@ -2926,7 +3210,123 @@ type ContractBase = Omit<
                 readonly quantity: { readonly column: 'quantity' };
                 readonly receivedAt: { readonly column: 'receivedAt' };
                 readonly receivedBy: { readonly column: 'receivedBy' };
+                readonly reservedQuantity: { readonly column: 'reservedQuantity' };
                 readonly unusedQuantity: { readonly column: 'unusedQuantity' };
+              };
+            };
+          };
+          readonly StockReservation: {
+            readonly fields: {
+              readonly consumedAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly decantBottleId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly orderItemId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly quantity: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly quantityMl: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly releasedAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly status: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly stockBatchId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly decantBottle: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'DecantBottle';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['decantBottleId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly orderItem: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'OrderItem';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['orderItemId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly stockBatch: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'StockBatch';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['stockBatchId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'StockReservation';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly consumedAt: { readonly column: 'consumedAt' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly decantBottleId: { readonly column: 'decantBottleId' };
+                readonly id: { readonly column: 'id' };
+                readonly orderItemId: { readonly column: 'orderItemId' };
+                readonly quantity: { readonly column: 'quantity' };
+                readonly quantityMl: { readonly column: 'quantityMl' };
+                readonly releasedAt: { readonly column: 'releasedAt' };
+                readonly status: { readonly column: 'status' };
+                readonly stockBatchId: { readonly column: 'stockBatchId' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
               };
             };
           };
@@ -3103,6 +3503,14 @@ type ContractBase = Omit<
               { readonly name: 'DECANT_20ML'; readonly value: 'DECANT_20ML' },
             ];
           };
+          readonly ReservationStatus: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'RESERVED'; readonly value: 'RESERVED' },
+              { readonly name: 'CONSUMED'; readonly value: 'CONSUMED' },
+              { readonly name: 'RELEASED'; readonly value: 'RELEASED' },
+            ];
+          };
           readonly RoleEnum: {
             readonly codecId: 'pg/text@1';
             readonly members: readonly [
@@ -3180,6 +3588,15 @@ type ContractBase = Omit<
           readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
           readonly ref: {
             readonly entry: 'Order';
+            readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'StockReservation';
             readonly field: 'updatedAt';
             readonly namespace: 'public';
           };

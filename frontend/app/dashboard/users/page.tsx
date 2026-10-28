@@ -50,6 +50,7 @@ export default function UsersPage() {
         });
 
         if (response.status === 401){
+          toast.info(`You Need To Authenticate Before Proceed !`, `Authentication Required`);
           router.push('/login')
         }else if ( response.status === 403 ) {
           router.push('/dashboard')

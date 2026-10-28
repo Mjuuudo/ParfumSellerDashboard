@@ -36,6 +36,7 @@ export default function EditStockBatchPage() {
       });
 
       if ( data.status === 401 ) {
+        toast.info(`You Need To Authenticate Before Proceed !`, `Authentication Required`);
         router.push('/login')
         return ;
       }
@@ -103,6 +104,7 @@ export default function EditStockBatchPage() {
     });
 
     if ( data.status === 401 || data.status === 403){
+      toast.info(`You Need To Authenticate Before Proceed !`, `Authentication Required`);
       router.push('/login');
       return ;
     }

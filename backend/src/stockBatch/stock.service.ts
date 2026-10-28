@@ -103,6 +103,16 @@ export class StockService{
             );
         }
 
+        // Bottles reserved for pending orders must stay in the batch, and must stay this perfume.
+        if (data.quantity !== undefined && data.quantity - openedBottles < batch.reservedQuantity) {
+            throw new BadRequestException(
+                `${batch.reservedQuantity} sealed bottle(s) of this batch are reserved for pending orders: the quantity can't go below ${openedBottles + batch.reservedQuantity} !`
+            );
+        }
+        if (data.parfumId !== undefined && data.parfumId !== batch?.parfum?.id && batch.reservedQuantity > 0) {
+            throw new BadRequestException(`This batch has bottles reserved for pending orders: its perfume can't be changed.`);
+        }
+
         const newObject = {
             ...((data.parfumId !== batch?.parfum?.id
                 && data.parfumId !== undefined

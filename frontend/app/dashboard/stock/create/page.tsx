@@ -25,6 +25,7 @@ export default function RecordDeliveryPage() {
       })
 
       if (data.status === 401) {
+        toast.info(`You Need To Authenticate Before Proceed !`, `Authentication Required`);
         router.push('/login');
         return ;
       }
@@ -74,6 +75,7 @@ export default function RecordDeliveryPage() {
     })
 
     if (data.status === 401) {
+      toast.info(`You Need To Authenticate Before Proceed !`, `Authentication Required`);
       router.push("/login");
       return ;
     }

@@ -4,6 +4,7 @@ export type StockBatch = {
   id: number;
   parfumId: number;
   quantity: number; // number of full bottles received
+  unusedQuantity: number; // bottles still sealed (quantity − bottles opened for decanting)
   purchaseCostPerBottle: number; // what YOU paid per bottle (not the selling price)
   receivedAt: string; // ISO date string from the API
   receivedBy: number; // id of the user who recorded the delivery

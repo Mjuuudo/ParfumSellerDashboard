@@ -1,0 +1,494 @@
+[
+  {
+    "id": "table.StockReservation",
+    "label": "Create table \"StockReservation\"",
+    "summary": "Creates table \"StockReservation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "StockReservation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"StockReservation\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockReservation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"StockReservation\"",
+        "sql": "CREATE TABLE \"public\".\"StockReservation\" (\n  \"consumedAt\" timestamptz,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"decantBottleId\" int4,\n  \"id\" SERIAL NOT NULL,\n  \"orderItemId\" int4 NOT NULL,\n  \"quantity\" int4,\n  \"quantityMl\" int4,\n  \"releasedAt\" timestamptz,\n  \"status\" text DEFAULT 'RESERVED' NOT NULL,\n  \"stockBatchId\" int4,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"StockReservation_status_check_4f928414\" CHECK (\"status\" IN ('RESERVED', 'CONSUMED', 'RELEASED')),\n  CONSTRAINT \"stockreservation_one_source_5172c28e\" CHECK ((\"stockBatchId\" IS NOT NULL AND \"quantity\" IS NOT NULL AND \"quantity\" > 0 AND \"decantBottleId\" IS NULL AND \"quantityMl\" IS NULL) OR (\"decantBottleId\" IS NOT NULL AND \"quantityMl\" IS NOT NULL AND \"quantityMl\" > 0 AND \"stockBatchId\" IS NULL AND \"quantity\" IS NULL))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"StockReservation\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockReservation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.DecantBottle.reservedVolumeMl",
+    "label": "Add column \"reservedVolumeMl\" to \"DecantBottle\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "reservedVolumeMl",
+        "table": "DecantBottle"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"reservedVolumeMl\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "DecantBottle",
+          "reservedVolumeMl"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"reservedVolumeMl\"",
+        "sql": "ALTER TABLE \"public\".\"DecantBottle\" ADD COLUMN \"reservedVolumeMl\" int4 DEFAULT 0 NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"reservedVolumeMl\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "DecantBottle",
+          "reservedVolumeMl"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.StockBatch.reservedQuantity",
+    "label": "Add column \"reservedQuantity\" to \"StockBatch\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "reservedQuantity",
+        "table": "StockBatch"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"reservedQuantity\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StockBatch",
+          "reservedQuantity"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"reservedQuantity\"",
+        "sql": "ALTER TABLE \"public\".\"StockBatch\" ADD COLUMN \"reservedQuantity\" int4 DEFAULT 0 NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"reservedQuantity\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StockBatch",
+          "reservedQuantity"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.DecantBottle.decantbottle_volume_bounds_eb759b42",
+    "label": "Add check constraint \"decantbottle_volume_bounds_eb759b42\" on \"DecantBottle\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "decantbottle_volume_bounds_eb759b42",
+        "table": "DecantBottle"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"decantbottle_volume_bounds_eb759b42\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "decantbottle_volume_bounds_eb759b42",
+          "public",
+          "\"public\".\"DecantBottle\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"decantbottle_volume_bounds_eb759b42\"",
+        "sql": "ALTER TABLE \"public\".\"DecantBottle\" ADD CONSTRAINT \"decantbottle_volume_bounds_eb759b42\" CHECK (\"remainingVolumeMl\" >= 0 AND \"reservedVolumeMl\" >= 0 AND \"reservedVolumeMl\" <= \"remainingVolumeMl\" AND \"remainingVolumeMl\" <= \"initialVolumeMl\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"decantbottle_volume_bounds_eb759b42\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "decantbottle_volume_bounds_eb759b42",
+          "public",
+          "\"public\".\"DecantBottle\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.OrderItem.orderitem_positive_amounts_a2f05bc9",
+    "label": "Add check constraint \"orderitem_positive_amounts_a2f05bc9\" on \"OrderItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "orderitem_positive_amounts_a2f05bc9",
+        "table": "OrderItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"orderitem_positive_amounts_a2f05bc9\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "orderitem_positive_amounts_a2f05bc9",
+          "public",
+          "\"public\".\"OrderItem\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"orderitem_positive_amounts_a2f05bc9\"",
+        "sql": "ALTER TABLE \"public\".\"OrderItem\" ADD CONSTRAINT \"orderitem_positive_amounts_a2f05bc9\" CHECK (\"quantity\" > 0 AND \"unitPrice\" >= 0 AND \"totalPrice\" >= 0)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"orderitem_positive_amounts_a2f05bc9\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "orderitem_positive_amounts_a2f05bc9",
+          "public",
+          "\"public\".\"OrderItem\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.StockBatch.stockbatch_reservation_bounds_23ceabb8",
+    "label": "Add check constraint \"stockbatch_reservation_bounds_23ceabb8\" on \"StockBatch\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "stockbatch_reservation_bounds_23ceabb8",
+        "table": "StockBatch"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"stockbatch_reservation_bounds_23ceabb8\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "stockbatch_reservation_bounds_23ceabb8",
+          "public",
+          "\"public\".\"StockBatch\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"stockbatch_reservation_bounds_23ceabb8\"",
+        "sql": "ALTER TABLE \"public\".\"StockBatch\" ADD CONSTRAINT \"stockbatch_reservation_bounds_23ceabb8\" CHECK (\"unusedQuantity\" >= 0 AND \"reservedQuantity\" >= 0 AND \"reservedQuantity\" <= \"unusedQuantity\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"stockbatch_reservation_bounds_23ceabb8\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "stockbatch_reservation_bounds_23ceabb8",
+          "public",
+          "\"public\".\"StockBatch\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockReservation.StockReservation_decantBottleId_idx_a6360438",
+    "label": "Create index \"StockReservation_decantBottleId_idx_a6360438\" on \"StockReservation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockReservation_decantBottleId_idx_a6360438",
+        "table": "StockReservation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockReservation_decantBottleId_idx_a6360438\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockReservation_decantBottleId_idx_a6360438\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockReservation_decantBottleId_idx_a6360438\"",
+        "sql": "CREATE INDEX \"StockReservation_decantBottleId_idx_a6360438\" ON \"public\".\"StockReservation\" (\"decantBottleId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockReservation_decantBottleId_idx_a6360438\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockReservation_decantBottleId_idx_a6360438\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockReservation.StockReservation_orderItemId_idx_99e2d9f7",
+    "label": "Create index \"StockReservation_orderItemId_idx_99e2d9f7\" on \"StockReservation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockReservation_orderItemId_idx_99e2d9f7",
+        "table": "StockReservation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockReservation_orderItemId_idx_99e2d9f7\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockReservation_orderItemId_idx_99e2d9f7\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockReservation_orderItemId_idx_99e2d9f7\"",
+        "sql": "CREATE INDEX \"StockReservation_orderItemId_idx_99e2d9f7\" ON \"public\".\"StockReservation\" (\"orderItemId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockReservation_orderItemId_idx_99e2d9f7\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockReservation_orderItemId_idx_99e2d9f7\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockReservation.StockReservation_stockBatchId_idx_a1b7aade",
+    "label": "Create index \"StockReservation_stockBatchId_idx_a1b7aade\" on \"StockReservation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockReservation_stockBatchId_idx_a1b7aade",
+        "table": "StockReservation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockReservation_stockBatchId_idx_a1b7aade\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockReservation_stockBatchId_idx_a1b7aade\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockReservation_stockBatchId_idx_a1b7aade\"",
+        "sql": "CREATE INDEX \"StockReservation_stockBatchId_idx_a1b7aade\" ON \"public\".\"StockReservation\" (\"stockBatchId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockReservation_stockBatchId_idx_a1b7aade\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockReservation_stockBatchId_idx_a1b7aade\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StockReservation.StockReservation_orderItemId_fkey",
+    "label": "Add foreign key \"StockReservation_orderItemId_fkey\" on \"StockReservation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StockReservation_orderItemId_fkey",
+        "table": "StockReservation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StockReservation_orderItemId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockReservation_orderItemId_fkey",
+          "public",
+          "\"public\".\"StockReservation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StockReservation_orderItemId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StockReservation\"\nADD CONSTRAINT \"StockReservation_orderItemId_fkey\"\nFOREIGN KEY (\"orderItemId\")\nREFERENCES \"public\".\"OrderItem\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StockReservation_orderItemId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockReservation_orderItemId_fkey",
+          "public",
+          "\"public\".\"StockReservation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StockReservation.StockReservation_stockBatchId_fkey",
+    "label": "Add foreign key \"StockReservation_stockBatchId_fkey\" on \"StockReservation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StockReservation_stockBatchId_fkey",
+        "table": "StockReservation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StockReservation_stockBatchId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockReservation_stockBatchId_fkey",
+          "public",
+          "\"public\".\"StockReservation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StockReservation_stockBatchId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StockReservation\"\nADD CONSTRAINT \"StockReservation_stockBatchId_fkey\"\nFOREIGN KEY (\"stockBatchId\")\nREFERENCES \"public\".\"StockBatch\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StockReservation_stockBatchId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockReservation_stockBatchId_fkey",
+          "public",
+          "\"public\".\"StockReservation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StockReservation.StockReservation_decantBottleId_fkey",
+    "label": "Add foreign key \"StockReservation_decantBottleId_fkey\" on \"StockReservation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StockReservation_decantBottleId_fkey",
+        "table": "StockReservation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StockReservation_decantBottleId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockReservation_decantBottleId_fkey",
+          "public",
+          "\"public\".\"StockReservation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StockReservation_decantBottleId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StockReservation\"\nADD CONSTRAINT \"StockReservation_decantBottleId_fkey\"\nFOREIGN KEY (\"decantBottleId\")\nREFERENCES \"public\".\"DecantBottle\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StockReservation_decantBottleId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockReservation_decantBottleId_fkey",
+          "public",
+          "\"public\".\"StockReservation\""
+        ]
+      }
+    ]
+  }
+]

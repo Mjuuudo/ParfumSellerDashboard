@@ -34,7 +34,7 @@ export default function BrandsPage() {
       });
 
       if ( data.status === 401 ) {
-        toast.error( `you need to Login !`);
+        toast.info(`You Need To Authenticate Before Proceed !`, `Authentication Required`);
         router.push('/login');
         return ;
       }

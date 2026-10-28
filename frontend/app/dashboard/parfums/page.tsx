@@ -38,6 +38,7 @@ export default function ParfumsPage() {
       })
 
         if (parfums.status === 401) {
+        toast.info(`You Need To Authenticate Before Proceed !`, `Authentication Required`);
         router.push('/login');
         return ;
       }
@@ -56,6 +57,7 @@ export default function ParfumsPage() {
       })
 
       if (brands.status === 401) {
+        toast.info(`You Need To Authenticate Before Proceed !`, `Authentication Required`);
         router.push('/login');
         return ;
       }
@@ -107,6 +109,7 @@ export default function ParfumsPage() {
     });
 
     if (data.status === 401) {
+      toast.info(`You Need To Authenticate Before Proceed !`, `Authentication Required`);
       router.push('/login');
       return ;
     }

@@ -25,15 +25,15 @@ export const mockParfums: Parfum[] = [
 ];
 
 export const mockBatches: StockBatch[] = [
-  { id: 201, parfumId: 101, quantity: 6, purchaseCostPerBottle: 1100, receivedAt: "2026-08-14T09:30:00.000Z", receivedBy: 2 },
-  { id: 202, parfumId: 101, quantity: 4, purchaseCostPerBottle: 1150, receivedAt: "2026-10-02T11:00:00.000Z", receivedBy: 1 },
-  { id: 203, parfumId: 102, quantity: 3, purchaseCostPerBottle: 1300, receivedAt: "2026-09-05T10:15:00.000Z", receivedBy: 2 },
-  { id: 204, parfumId: 103, quantity: 10, purchaseCostPerBottle: 280, receivedAt: "2026-07-20T14:45:00.000Z", receivedBy: 3 },
-  // Only 1 bottle, already opened → shows the "no unopened bottles" validation.
-  { id: 205, parfumId: 104, quantity: 1, purchaseCostPerBottle: 2600, receivedAt: "2026-09-28T16:20:00.000Z", receivedBy: 2 },
-  { id: 206, parfumId: 105, quantity: 5, purchaseCostPerBottle: 450, receivedAt: "2026-06-11T08:50:00.000Z", receivedBy: 1 },
+  { id: 201, parfumId: 101, quantity: 6, unusedQuantity: 4, purchaseCostPerBottle: 1100, receivedAt: "2026-08-14T09:30:00.000Z", receivedBy: 2 },
+  { id: 202, parfumId: 101, quantity: 4, unusedQuantity: 4, purchaseCostPerBottle: 1150, receivedAt: "2026-10-02T11:00:00.000Z", receivedBy: 1 },
+  { id: 203, parfumId: 102, quantity: 3, unusedQuantity: 2, purchaseCostPerBottle: 1300, receivedAt: "2026-09-05T10:15:00.000Z", receivedBy: 2 },
+  { id: 204, parfumId: 103, quantity: 10, unusedQuantity: 8, purchaseCostPerBottle: 280, receivedAt: "2026-07-20T14:45:00.000Z", receivedBy: 3 },
+  // Only 1 bottle, already opened.
+  { id: 205, parfumId: 104, quantity: 1, unusedQuantity: 0, purchaseCostPerBottle: 2600, receivedAt: "2026-09-28T16:20:00.000Z", receivedBy: 2 },
+  { id: 206, parfumId: 105, quantity: 5, unusedQuantity: 3, purchaseCostPerBottle: 450, receivedAt: "2026-06-11T08:50:00.000Z", receivedBy: 1 },
   // Coco Mademoiselle: delivered but never opened.
-  { id: 207, parfumId: 106, quantity: 2, purchaseCostPerBottle: 1400, receivedAt: "2026-10-15T12:00:00.000Z", receivedBy: 2 },
+  { id: 207, parfumId: 106, quantity: 2, unusedQuantity: 2, purchaseCostPerBottle: 1400, receivedAt: "2026-10-15T12:00:00.000Z", receivedBy: 2 },
 ];
 
 // Bottles WITHOUT remaining volume: that's calculated from the operations below.

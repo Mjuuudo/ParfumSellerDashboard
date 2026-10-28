@@ -23,6 +23,15 @@ enum DecantOpperationType {
   REVERSAL
 }
 
+// Lifecycle of a StockReservation:
+// RESERVED (order pending) → CONSUMED (order confirmed, stock deducted)
+//                          → RELEASED (order cancelled; consumedAt set too if it had been confirmed and was reversed)
+enum ReservationStatus {
+  RESERVED
+  CONSUMED
+  RELEASED
+}
+
 model User {
   id Int @id @default(autoincrement())
   username String @unique
@@ -113,6 +122,34 @@ model OrderItem{
   parfum Parfum @relation(fields: [parfumId], references: [id])
 
   orderItemsConsumptions OrderitemConsumption[]
+  stockReservations StockReservation[]
+
+  @@check(expression: "\"quantity\" > 0 AND \"unitPrice\" >= 0 AND \"totalPrice\" >= 0", name: "orderitem_positive_amounts")
+}
+
+// One allocation of stock to an order item: either N sealed bottles of a StockBatch (COMPLETE)
+// or N ml of an opened DecantBottle (DECANT_10ML / DECANT_20ML). Exactly one source is set.
+model StockReservation{
+  id Int @id @default(autoincrement())
+
+  orderItemId Int
+  orderItem OrderItem @relation(fields: [orderItemId], references: [id])
+
+  stockBatchId Int?
+  stockBatch StockBatch? @relation(fields: [stockBatchId], references: [id])
+  quantity Int?
+
+  decantBottleId Int?
+  decantBottle DecantBottle? @relation(fields: [decantBottleId], references: [id])
+  quantityMl Int?
+
+  status ReservationStatus @default(RESERVED)
+  createdAt DateTime @default(now())
+  updatedAt temporal.updatedAt()
+  consumedAt DateTime?
+  releasedAt DateTime?
+
+  @@check(expression: "(\"stockBatchId\" IS NOT NULL AND \"quantity\" IS NOT NULL AND \"quantity\" > 0 AND \"decantBottleId\" IS NULL AND \"quantityMl\" IS NULL) OR (\"decantBottleId\" IS NOT NULL AND \"quantityMl\" IS NOT NULL AND \"quantityMl\" > 0 AND \"stockBatchId\" IS NULL AND \"quantity\" IS NULL)", name: "stockreservation_one_source")
 }
 
 model OrderitemConsumption{
@@ -167,6 +204,8 @@ model StockBatch{
 
   quantity Int
   unusedQuantity Int
+  // Sealed bottles held for pending orders. Available = unusedQuantity - reservedQuantity.
+  reservedQuantity Int @default(0)
   purchaseCostPerBottle Int
   receivedAt DateTime @default(now())
 
@@ -174,7 +213,9 @@ model StockBatch{
   receivedByUser User @relation(fields: [receivedBy], references: [id])
 
   decantBottles DecantBottle[]
+  stockReservations StockReservation[]
 
+  @@check(expression: "\"unusedQuantity\" >= 0 AND \"reservedQuantity\" >= 0 AND \"reservedQuantity\" <= \"unusedQuantity\"", name: "stockbatch_reservation_bounds")
 }
 
 
@@ -190,6 +231,8 @@ model DecantBottle{
 
   initialVolumeMl Int
   remainingVolumeMl Int
+  // Millilitres held for pending orders. Available = remainingVolumeMl - reservedVolumeMl.
+  reservedVolumeMl Int @default(0)
   reservedAt DateTime?
 
   reservedById Int?
@@ -202,6 +245,9 @@ model DecantBottle{
 
   decantOpperation DecantOpperation[]
   orderItemConsumption OrderitemConsumption[]
+  stockReservations StockReservation[]
+
+  @@check(expression: "\"remainingVolumeMl\" >= 0 AND \"reservedVolumeMl\" >= 0 AND \"reservedVolumeMl\" <= \"remainingVolumeMl\" AND \"remainingVolumeMl\" <= \"initialVolumeMl\"", name: "decantbottle_volume_bounds")
 }
 
 

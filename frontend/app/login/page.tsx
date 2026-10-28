@@ -35,6 +35,7 @@ export default function LoginPage() {
         return;
     }
 
+    toast.success(`Welcome Back ${username} !`, `Logged In Successfully`);
     router.push("/dashboard");
   }
 

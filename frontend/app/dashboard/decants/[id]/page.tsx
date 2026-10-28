@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   ArrowLeft,
   Boxes,
@@ -20,28 +21,93 @@ import {
   formatDateTime,
   getBottleStatus,
   remainingPercent,
+  type DecantBottle,
   type DecantOperation,
 } from "../_components/decantBottle";
 import VolumeBar from "../_components/VolumeBar";
 import BottleStatusBadge from "../_components/BottleStatusBadge";
-import PrototypeNotice from "../_components/PrototypeNotice";
-// ⚠ Prototype: replace with fetches of the real endpoints once they exist.
-import { mockBottles, mockOperations } from "../_mock/decantMocks";
+import { LoadErrorCard, LoadingCard } from "../../_components/LoadStateCards";
+import { useToast } from "../../../_components/Toast";
 
 export default function DecantBottleDetailsPage() {
   const params = useParams<{ id: string }>();
-  const bottle = mockBottles.find((item) => item.id === Number(params.id));
+  const id = params.id;
+  const router = useRouter();
+  const toast = useToast();
 
-  if (!bottle) {
+  // ── Data from GET /api/bottle/:id ──
+  const [bottle, setBottle] = useState<DecantBottle | null>(null);
+  const [loading, setLoading] = useState(true); // true → skeleton
+  const [loadError, setLoadError] = useState(false); // true → error card with "Try again"
+  const [notFound, setNotFound] = useState(false); // true → "Bottle #id not found"
+  const [reloadKey, setReloadKey] = useState(0); // +1 → the useEffect below runs again
+
+  useEffect(() => {
+    const fetchBottle = async () => {
+      try {
+        // TODO(you): GET http://localhost:8000/api/bottle/${id} with credentials: "include"
+        //  - 401      → toast.info(`You Need To Authenticate Before Proceed !`, `Authentication Required`)
+        //               + router.push('/login')
+        //  - 404      → setNotFound(true)
+        //  - not ok   → toast.error("...") + setLoadError(true)
+        //  - ok       → const result: DecantBottle = await res.json();
+        //               setBottle(result);   ← 👈 PUT THE DATA HERE
+        const data = await fetch(`http://localhost:8000/api/bottle/${id}`, {
+          method: "get",
+          credentials: "include",
+        });
+
+        if (data.status === 401 || data.status === 403) {
+          toast.error(`You Need To Authenticate !`, `Authentication Required`);
+          router.push('/login');
+          return ;
+        }
+
+        if ( !data.ok ) {
+          toast.error(`Error Happend While Fetching Data`, `Critical Error`);
+          return ;
+        }
+
+        toast.success(`Product Found Successfully !`, `Success On Fetching Data`);
+        setBottle(await data.json());
+
+      } catch {
+        toast.error("Could not reach the server.");
+        setLoadError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBottle();
+  }, [id, reloadKey, router, toast]);
+
+  const retry = () => {
+    setLoading(true);
+    setLoadError(false);
+    setNotFound(false);
+    setReloadKey((key) => key + 1);
+  };
+
+  // No endpoint for the decant operations yet: the Activity list stays empty until there is one.
+  const operations: DecantOperation[] = [];
+
+  if (loading || loadError || notFound || !bottle) {
     return (
-      <div className="mx-auto max-w-4xl space-y-6">
+      <div className="mx-auto max-w-5xl space-y-8">
         <BackLink />
-        <section className="rounded-2xl border border-slate-800 bg-slate-900 p-10 text-center">
-          <h1 className="text-xl font-semibold">Bottle #{params.id} not found</h1>
-          <p className="mt-2 text-sm text-slate-400">
-            It may not exist yet. (In this prototype, only the mock bottles #1 to #{mockBottles.length} exist.)
-          </p>
-        </section>
+        {loading ? (
+          <LoadingCard label="Loading bottle information..." />
+        ) : loadError ? (
+          <LoadErrorCard what="this bottle" onRetry={retry} />
+        ) : (
+          <section className="rounded-2xl border border-slate-800 bg-slate-900 p-10 text-center">
+            <h1 className="text-xl font-semibold">Bottle #{id} not found</h1>
+            <p className="mt-2 text-sm text-slate-400">
+              It may have been removed, or the link is wrong.
+            </p>
+          </section>
+        )}
       </div>
     );
   }
@@ -49,17 +115,12 @@ export default function DecantBottleDetailsPage() {
   const status = getBottleStatus(bottle);
   const consumed = consumedMl(bottle);
   const percent = remainingPercent(bottle);
-  const operations = mockOperations
-    .filter((op) => op.decantBottleId === bottle.id)
-    .sort((a, b) => b.performedAt.localeCompare(a.performedAt));
   const batch = bottle.stockBatch;
   const parfum = batch.parfum;
 
   return (
     <div className="mx-auto max-w-5xl space-y-8">
       <BackLink />
-
-      <PrototypeNotice>The bottle, its batch and its activity below are example data.</PrototypeNotice>
 
       {/* Header */}
       <section className="flex flex-col gap-5 rounded-2xl border border-slate-800 bg-slate-900 p-6 sm:flex-row sm:items-center sm:p-8">
@@ -176,10 +237,13 @@ export default function DecantBottleDetailsPage() {
             <History size={18} className="text-amber-400" />
             Activity
           </h2>
-          <span className="rounded-full border border-sky-500/30 bg-sky-500/10 px-2.5 py-0.5 text-xs text-sky-300">
-            Mock events
-          </span>
         </div>
+
+        {operations.length === 0 && (
+          <p className="mt-4 text-sm text-slate-500">
+            No decant sold from this bottle yet. Each 10 ml or 20 ml decant will appear here.
+          </p>
+        )}
 
         <ol className="mt-6 space-y-0">
           {operations.map((op) => (

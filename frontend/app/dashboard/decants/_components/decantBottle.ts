@@ -81,13 +81,6 @@ export function remainingPercent(bottle: DecantBottle) {
   return Math.round((bottle.remainingVolumeMl / bottle.initialVolumeMl) * 100);
 }
 
-// Unopened bottles left in a batch = bottles received − bottles already opened from it.
-// ⚠ Does NOT account for full bottles sold directly (OrderItem has no stockBatchId), see notes.
-export function unopenedInBatch(batch: { id: number; quantity: number }, bottles: DecantBottle[]) {
-  const opened = bottles.filter((bottle) => bottle.stockBatchId === batch.id).length;
-  return Math.max(batch.quantity - opened, 0);
-}
-
 // Fixed locale + UTC so server and browser render the same text (no hydration mismatch).
 const dateFormatter = new Intl.DateTimeFormat("en-GB", {
   day: "2-digit",

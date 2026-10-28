@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { PackageOpen, Search, FlaskConical, ChevronRight, UserRound, Filter } from "lucide-react";
+import { PackageOpen, Search, FlaskConical, ChevronRight, UserRound, Filter, History } from "lucide-react";
 import BrandAvatar from "../brands/_components/BrandAvatar";
 import {
   consumedMl,
@@ -54,6 +54,7 @@ export default function DecantBottlesPage() {
       });
 
       if (data.status === 401 || data.status === 403) {
+        toast.info(`You Need To Authenticate Before Proceed !`, `Authentication Required`);
         router.push('/login');
         return ;
       }
@@ -121,13 +122,22 @@ export default function DecantBottlesPage() {
           </p>
         </div>
 
-        <Link
-          href="/dashboard/decants/open"
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-amber-500 px-5 py-3 font-semibold text-slate-950 transition hover:bg-amber-400"
-        >
-          <PackageOpen size={18} />
-          Open Bottle for Decanting
-        </Link>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Link
+            href="/dashboard/decants/operations"
+            className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-700 px-5 py-3 font-semibold text-slate-300 transition hover:bg-slate-800"
+          >
+            <History size={18} />
+            Operation History
+          </Link>
+          <Link
+            href="/dashboard/decants/open"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-amber-500 px-5 py-3 font-semibold text-slate-950 transition hover:bg-amber-400"
+          >
+            <PackageOpen size={18} />
+            Open Bottle for Decanting
+          </Link>
+        </div>
       </div>
 
       {/* Summary cards */}

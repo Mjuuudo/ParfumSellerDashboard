@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common"
+import { BadRequestException, Injectable } from "@nestjs/common"
 import { db } from "../prisma/db.js";
 import { Temporal } from "temporal-polyfill";
 import { BottleCreationDto } from "./dto/bottleCreation.dto.js";
@@ -23,6 +23,11 @@ export class BottleService{
         if ( !stockbatch || stockbatch.unusedQuantity === 0 
                 || !stockbatch.parfum || !stockbatch.receivedByUser  ) {
             throw new Error(`Malformed Stockbatch Object`) ;
+        }
+
+        // Sealed bottles reserved for pending orders can't be opened (available = unused − reserved).
+        if ( stockbatch.unusedQuantity - stockbatch.reservedQuantity <= 0 ) {
+            throw new BadRequestException(`Every sealed bottle left in this batch is reserved for a pending order.`);
         }
 
         const newObject = {

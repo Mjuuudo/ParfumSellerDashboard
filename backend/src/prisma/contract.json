@@ -44,6 +44,10 @@
       "model": "StockBatch",
       "namespace": "public"
     },
+    "StockReservation": {
+      "model": "StockReservation",
+      "namespace": "public"
+    },
     "User": {
       "model": "User",
       "namespace": "public"
@@ -101,6 +105,23 @@
               {
                 "name": "DECANT_20ML",
                 "value": "DECANT_20ML"
+              }
+            ]
+          },
+          "ReservationStatus": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "RESERVED",
+                "value": "RESERVED"
+              },
+              {
+                "name": "CONSUMED",
+                "value": "CONSUMED"
+              },
+              {
+                "name": "RELEASED",
+                "value": "RELEASED"
               }
             ]
           },
@@ -378,6 +399,13 @@
                   "kind": "scalar"
                 }
               },
+              "reservedVolumeMl": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
               "stockBatchId": {
                 "nullable": false,
                 "type": {
@@ -471,6 +499,21 @@
                   "model": "StockBatch",
                   "namespace": "public"
                 }
+              },
+              "stockReservations": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "decantBottleId"
+                  ]
+                },
+                "to": {
+                  "model": "StockReservation",
+                  "namespace": "public"
+                }
               }
             },
             "storage": {
@@ -501,6 +544,9 @@
                 },
                 "reservedById": {
                   "column": "reservedById"
+                },
+                "reservedVolumeMl": {
+                  "column": "reservedVolumeMl"
                 },
                 "stockBatchId": {
                   "column": "stockBatchId"
@@ -1161,6 +1207,21 @@
                   "model": "Parfum",
                   "namespace": "public"
                 }
+              },
+              "stockReservations": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "orderItemId"
+                  ]
+                },
+                "to": {
+                  "model": "StockReservation",
+                  "namespace": "public"
+                }
               }
             },
             "storage": {
@@ -1482,6 +1543,13 @@
                   "kind": "scalar"
                 }
               },
+              "reservedQuantity": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
               "unusedQuantity": {
                 "nullable": false,
                 "type": {
@@ -1537,6 +1605,21 @@
                   "model": "User",
                   "namespace": "public"
                 }
+              },
+              "stockReservations": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "stockBatchId"
+                  ]
+                },
+                "to": {
+                  "model": "StockReservation",
+                  "namespace": "public"
+                }
               }
             },
             "storage": {
@@ -1559,12 +1642,191 @@
                 "receivedBy": {
                   "column": "receivedBy"
                 },
+                "reservedQuantity": {
+                  "column": "reservedQuantity"
+                },
                 "unusedQuantity": {
                   "column": "unusedQuantity"
                 }
               },
               "namespaceId": "public",
               "table": "StockBatch"
+            }
+          },
+          "StockReservation": {
+            "fields": {
+              "consumedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "decantBottleId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "orderItemId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "quantity": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "quantityMl": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "releasedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "ReservationStatus",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "stockBatchId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "decantBottle": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "decantBottleId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "DecantBottle",
+                  "namespace": "public"
+                }
+              },
+              "orderItem": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "orderItemId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "OrderItem",
+                  "namespace": "public"
+                }
+              },
+              "stockBatch": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "stockBatchId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "StockBatch",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "consumedAt": {
+                  "column": "consumedAt"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "decantBottleId": {
+                  "column": "decantBottleId"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "orderItemId": {
+                  "column": "orderItemId"
+                },
+                "quantity": {
+                  "column": "quantity"
+                },
+                "quantityMl": {
+                  "column": "quantityMl"
+                },
+                "releasedAt": {
+                  "column": "releasedAt"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "stockBatchId": {
+                  "column": "stockBatchId"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "StockReservation"
             }
           },
           "User": {
@@ -1929,6 +2191,13 @@
               "uniques": []
             },
             "DecantBottle": {
+              "checks": [
+                {
+                  "expression": "\"remainingVolumeMl\" >= 0 AND \"reservedVolumeMl\" >= 0 AND \"reservedVolumeMl\" <= \"remainingVolumeMl\" AND \"remainingVolumeMl\" <= \"initialVolumeMl\"",
+                  "name": "decantbottle_volume_bounds_eb759b42",
+                  "prefix": "decantbottle_volume_bounds"
+                }
+              ],
               "columns": {
                 "createdAt": {
                   "codecId": "pg/timestamptz-temporal@1",
@@ -1986,6 +2255,15 @@
                   "codecId": "pg/int4@1",
                   "nativeType": "int4",
                   "nullable": true
+                },
+                "reservedVolumeMl": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
                 },
                 "stockBatchId": {
                   "codecId": "pg/int4@1",
@@ -2548,6 +2826,11 @@
                   "expression": "\"sellingType\" IN ('COMPLETE', 'DECANT_10ML', 'DECANT_20ML')",
                   "name": "OrderItem_sellingType_check_5cd55605",
                   "prefix": "OrderItem_sellingType_check"
+                },
+                {
+                  "expression": "\"quantity\" > 0 AND \"unitPrice\" >= 0 AND \"totalPrice\" >= 0",
+                  "name": "orderitem_positive_amounts_a2f05bc9",
+                  "prefix": "orderitem_positive_amounts"
                 }
               ],
               "columns": {
@@ -2846,6 +3129,13 @@
               ]
             },
             "StockBatch": {
+              "checks": [
+                {
+                  "expression": "\"unusedQuantity\" >= 0 AND \"reservedQuantity\" >= 0 AND \"reservedQuantity\" <= \"unusedQuantity\"",
+                  "name": "stockbatch_reservation_bounds_23ceabb8",
+                  "prefix": "stockbatch_reservation_bounds"
+                }
+              ],
               "columns": {
                 "id": {
                   "codecId": "pg/int4@1",
@@ -2882,6 +3172,15 @@
                 },
                 "receivedBy": {
                   "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "reservedQuantity": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
                   "nativeType": "int4",
                   "nullable": false
                 },
@@ -2940,6 +3239,177 @@
                   ],
                   "name": "StockBatch_receivedBy_idx_c1d3f365",
                   "prefix": "StockBatch_receivedBy_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "StockReservation": {
+              "checks": [
+                {
+                  "expression": "\"status\" IN ('RESERVED', 'CONSUMED', 'RELEASED')",
+                  "name": "StockReservation_status_check_4f928414",
+                  "prefix": "StockReservation_status_check"
+                },
+                {
+                  "expression": "(\"stockBatchId\" IS NOT NULL AND \"quantity\" IS NOT NULL AND \"quantity\" > 0 AND \"decantBottleId\" IS NULL AND \"quantityMl\" IS NULL) OR (\"decantBottleId\" IS NOT NULL AND \"quantityMl\" IS NOT NULL AND \"quantityMl\" > 0 AND \"stockBatchId\" IS NULL AND \"quantity\" IS NULL)",
+                  "name": "stockreservation_one_source_5172c28e",
+                  "prefix": "stockreservation_one_source"
+                }
+              ],
+              "columns": {
+                "consumedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "decantBottleId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "orderItemId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "quantity": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "quantityMl": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "releasedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "RESERVED"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "ReservationStatus",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "stockBatchId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "source": {
+                    "columns": [
+                      "orderItemId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StockReservation"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "OrderItem"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "stockBatchId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StockReservation"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StockBatch"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "decantBottleId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StockReservation"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "DecantBottle"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "decantBottleId"
+                  ],
+                  "name": "StockReservation_decantBottleId_idx_a6360438",
+                  "prefix": "StockReservation_decantBottleId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "orderItemId"
+                  ],
+                  "name": "StockReservation_orderItemId_idx_99e2d9f7",
+                  "prefix": "StockReservation_orderItemId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "stockBatchId"
+                  ],
+                  "name": "StockReservation_stockBatchId_idx_a1b7aade",
+                  "prefix": "StockReservation_stockBatchId_idx",
                   "unique": false
                 }
               ],
@@ -3084,6 +3554,14 @@
                 "DECANT_20ML"
               ]
             },
+            "ReservationStatus": {
+              "kind": "valueSet",
+              "values": [
+                "RESERVED",
+                "CONSUMED",
+                "RELEASED"
+              ]
+            },
             "RoleEnum": {
               "kind": "valueSet",
               "values": [
@@ -3097,10 +3575,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "03097e4092520b0341176b3ca0e7c1fd2f0682d7dffb12d6286fc6c0b4794193"
+    "storageHash": "c20cd972509d72c645850bd1d17ef16a59874ce38010529deb8cbf18ce858d88"
   },
   "execution": {
-    "executionHash": "7cfd33a50961b5cc96407c6d6170117f9eddd327b45504a4d979ced8125b67aa",
+    "executionHash": "aefc8d59ce5e309b4197d30f139bcc131c993b83fc7493d502a400fe98914454",
     "mutations": {
       "defaults": [
         {
@@ -3174,6 +3652,21 @@
           },
           "ref": {
             "entry": "Order",
+            "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "StockReservation",
             "field": "updatedAt",
             "namespace": "public"
           }
