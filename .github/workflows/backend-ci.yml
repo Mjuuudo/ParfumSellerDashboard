@@ -1,0 +1,39 @@
+
+name: Backend CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Run lint
+        working-directory: backend
+        run: npm run lint
+
+      - name: Build backend
+        working-directory: backend
+        run: npm run build
+
+      - name: Run unit tests
+        working-directory: backend
+        run: npm run test
