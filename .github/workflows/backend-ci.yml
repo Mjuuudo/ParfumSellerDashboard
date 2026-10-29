@@ -2,37 +2,26 @@ name: Backend CI
 
 on:
   push:
-    branches: [main]
+    branches: [master]
+    paths: ["backend/**", ".github/workflows/backend-ci.yml"]
   pull_request:
-    branches: [main]
+    branches: [master]
+    paths: ["backend/**", ".github/workflows/backend-ci.yml"]
 
 jobs:
-  backend-checks:
+  build-and-test:
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: backend
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
           cache-dependency-path: backend/package-lock.json
-
-      - name: Install backend dependencie
-        working-directory: backend
-        run: npm ci
-
-      - name: Run lint
-        working-directory: backend
-        run: npm run lint
-
-      - name: Build backend
-        working-directory: backend
-        run: npm run build
-
-      - name: Run unit tests
-        working-directory: backend
-        run: npm run test
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      - run: npm test
