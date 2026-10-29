@@ -1,5 +1,6 @@
 "use client";
 
+import { API_BASE_URL } from "@/app/_lib/api";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState, type FormEvent, useEffect } from "react";
@@ -30,7 +31,7 @@ export default function EditStockBatchPage() {
   useEffect( () => {
     const fetchData = async() => {
       try {
-      const data = await fetch(`http://localhost:8000/api/stock/${id}`, {
+      const data = await fetch(`${API_BASE_URL}/stock/${id}`, {
         method: "get",
         credentials: "include"
       });
@@ -49,7 +50,7 @@ export default function EditStockBatchPage() {
 
       setBatch(await data.json());
 
-      const parfums = await fetch(`http://localhost:8000/api/parfum`, {
+      const parfums = await fetch(`${API_BASE_URL}/parfum`, {
         method: "get",
         credentials: "include"
       });
@@ -94,7 +95,7 @@ export default function EditStockBatchPage() {
       purchaseCostPerBottle: Number(formData.get("purchaseCostPerBottle"))
     };
 
-    const data = await fetch(`http://localhost:8000/api/stock/${id}`, {
+    const data = await fetch(`${API_BASE_URL}/stock/${id}`, {
       method: "PATCH",
       credentials: "include",
       headers: {

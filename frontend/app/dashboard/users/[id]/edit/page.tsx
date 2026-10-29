@@ -1,6 +1,7 @@
 
 "use client";
 
+import { API_BASE_URL } from "@/app/_lib/api";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 import { useToast } from "../../../../_components/Toast";
@@ -33,7 +34,7 @@ export default function EditUserPage() {
     const searchForUser = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8000/api/user/${id}`,
+          `${API_BASE_URL}/user/${id}`,
           {
             method: "GET",
             credentials: "include",
@@ -112,7 +113,7 @@ export default function EditUserPage() {
       return ;
     }
     
-    const data = await fetch(`http://localhost:8000/api/user/${id}`, {
+    const data = await fetch(`${API_BASE_URL}/user/${id}`, {
       method: "PATCH",
       credentials: "include",
       headers: {

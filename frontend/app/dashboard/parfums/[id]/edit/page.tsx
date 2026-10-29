@@ -1,5 +1,6 @@
 "use client";
 
+import { API_BASE_URL } from "@/app/_lib/api";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState, type FormEvent, useEffect } from "react";
@@ -30,7 +31,7 @@ export default function EditParfumPage() {
   useEffect(() => {
     const fetchParfum = async () => {
       try {
-      const data = await fetch(`http://localhost:8000/api/parfum/${id}`, {
+      const data = await fetch(`${API_BASE_URL}/parfum/${id}`, {
         method: "get",
         credentials: "include",
       });
@@ -57,7 +58,7 @@ export default function EditParfumPage() {
 
     const fetchBrands = async () => {
       try {
-      const data = await fetch("http://localhost:8000/api/brand", {
+      const data = await fetch(`${API_BASE_URL}/brand`, {
         method: "get",
         credentials: "include",
       });
@@ -124,7 +125,7 @@ export default function EditParfumPage() {
       return ;
     }
 
-    const data = await fetch(`http://localhost:8000/api/parfum/${id}`, {
+    const data = await fetch(`${API_BASE_URL}/parfum/${id}`, {
       method: "PATCH",
       credentials: "include",
       headers: {

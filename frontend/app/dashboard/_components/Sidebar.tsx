@@ -1,5 +1,6 @@
 "use client";
 
+import { API_BASE_URL } from "@/app/_lib/api";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LogOut, UserRound, X } from "lucide-react";
@@ -20,7 +21,7 @@ export default function Sidebar({ onNavigate, onClose }: SidebarProps) {
 
   // Same logout call and redirect that used to live in the dashboard top navigation.
   async function handleLogout( ) {
-    const data = await fetch('http://localhost:8000/api/auth/logout', {
+    const data = await fetch(`${API_BASE_URL}/auth/logout`, {
       method: 'post',
       credentials: 'include',
       headers: {

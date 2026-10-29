@@ -1,7 +1,8 @@
+import { API_BASE_URL } from "@/app/_lib/api";
 // Types + helpers for the order screens. Shapes mirror the real responses of
 // backend/src/order (order.service.ts / inventory.service.ts). Dates arrive as ISO strings.
 
-export const API_BASE = "http://localhost:8000/api";
+export const API_BASE = API_BASE_URL;
 
 export type OrderStatus = "PENDING" | "COMFIRMED" | "DELIVERD" | "CANCELLED";
 export type SellingType = "COMPLETE" | "DECANT_10ML" | "DECANT_20ML";

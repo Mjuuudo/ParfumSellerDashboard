@@ -1,6 +1,7 @@
 
 "use client";
 
+import { API_BASE_URL } from "@/app/_lib/api";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "../../_components/Toast";
@@ -24,7 +25,7 @@ export default function ProfilePage() {
       router.push(`/dashboard/users/${userData?.id}/edit`);
     }
     async function handleLogout ( ) {
-        const data = await fetch('http://localhost:8000/api/auth/logout', {
+        const data = await fetch(`${API_BASE_URL}/auth/logout`, {
         method: 'post',
         credentials: 'include',
         headers: {
@@ -43,7 +44,7 @@ export default function ProfilePage() {
     useEffect(() => {
         async function fetchUserData () {
             try {
-            const response = await fetch ("http://localhost:8000/api/user/me", {
+            const response = await fetch (`${API_BASE_URL}/user/me`, {
                 method: "get",
                 credentials: "include",
                 headers: {

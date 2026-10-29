@@ -1,5 +1,6 @@
 "use client";
 
+import { API_BASE_URL } from "@/app/_lib/api";
 import Link from "next/link";
 import type { FormEvent } from "react";
 import { ArrowLeft, Tags } from "lucide-react";
@@ -30,7 +31,7 @@ export default function CreateBrandPage() {
       name: name
     }
 
-    const data = await fetch("http://localhost:8000/api/brand", {
+    const data = await fetch(`${API_BASE_URL}/brand`, {
       method: "post",
       credentials: "include",
       headers: {

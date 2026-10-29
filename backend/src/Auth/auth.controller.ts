@@ -28,7 +28,7 @@ export class AuthController {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict',
-                maxAge: parseInt(process.env.JWT_EXPIRES_IN ?? '3600') * 1000, // Convert seconds to milliseconds
+                maxAge: parseInt(process.env.JWT_EXPIRES_IN || '3600') * 1000, // Convert seconds to milliseconds
             }
 
         )

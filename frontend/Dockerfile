@@ -5,4 +5,5 @@ USER node
 COPY --chown=node:node package*.json ./
 RUN npm install
 COPY --chown=node:node . .
+RUN npm install lucide-react
 CMD ["npm", "run", "dev"] 

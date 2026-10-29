@@ -1,5 +1,6 @@
 "use client";
 
+import { API_BASE_URL } from "@/app/_lib/api";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Plus, Search, Pencil, Power, Tags } from "lucide-react";
@@ -32,7 +33,7 @@ export default function ParfumsPage() {
   useEffect( () => {
     const fetchParfums = async () => {
       try {
-      const parfums = await fetch(`http://localhost:8000/api/parfum`, {
+      const parfums = await fetch(`${API_BASE_URL}/parfum`, {
         method: "get",
         credentials: "include",
       })
@@ -51,7 +52,7 @@ export default function ParfumsPage() {
 
       setParfums(await parfums.json());
 
-      const brands = await fetch (`http://localhost:8000/api/brand`, {
+      const brands = await fetch (`${API_BASE_URL}/brand`, {
         method: "get",
         credentials: "include",
       })
@@ -99,7 +100,7 @@ export default function ParfumsPage() {
 
     console.log(newStatus);
     console.log(parfum.id);
-    const data = await fetch(`http://localhost:8000/api/parfum/${parfum.id}`, {
+    const data = await fetch(`${API_BASE_URL}/parfum/${parfum.id}`, {
       method: "PATCH",
       credentials: "include",
       headers: {
@@ -126,6 +127,11 @@ export default function ParfumsPage() {
     ));
   };
 
+  // Summary figures, computed from the loaded perfumes.
+  const ready = !loading && !error;
+  const activeCount = parfums.filter((parfum) => parfum.isActive).length;
+  const brandCount = new Set(parfums.map((parfum) => parfum.brandId)).size;
+
   return (
     <div className="space-y-8">
       {/* Heading */}
@@ -150,22 +156,22 @@ export default function ParfumsPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
           <p className="text-sm text-slate-400">Total Perfumes</p>
-          <p className="mt-3 text-3xl font-bold">
-            {/* TODO(you): parfums.length */}
+          <p className="mt-3 text-3xl font-bold tabular-nums">
+            {ready ? parfums.length : "—"}
           </p>
         </div>
 
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
           <p className="text-sm text-slate-400">Active</p>
-          <p className="mt-3 text-3xl font-bold text-emerald-400">
-            {/* TODO(you): count perfumes where isActive is true */}
+          <p className="mt-3 text-3xl font-bold tabular-nums text-emerald-400">
+            {ready ? activeCount : "—"}
           </p>
         </div>
 
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
           <p className="text-sm text-slate-400">Brands Represented</p>
-          <p className="mt-3 text-3xl font-bold text-amber-400">
-            {/* TODO(you): number of different brandId values in parfums (hint: new Set) */}
+          <p className="mt-3 text-3xl font-bold tabular-nums text-amber-400">
+            {ready ? brandCount : "—"}
           </p>
         </div>
       </div>
@@ -306,9 +312,12 @@ export default function ParfumsPage() {
           </>
         )}
 
-        <div className="border-t border-slate-800 px-6 py-4 text-xs text-slate-500">
-          {/* TODO(you): e.g. "Showing 4 of 12 perfumes" once search and the filter are wired up */}
-        </div>
+        {ready && parfums.length > 0 && (
+          <div className="border-t border-slate-800 px-6 py-4 text-xs text-slate-500">
+            {/* TODO(you): once search and the filter are wired up, show "Showing X of Y perfumes" */}
+            {parfums.length} perfume{parfums.length === 1 ? "" : "s"} · {activeCount} active · {brandCount} brand{brandCount === 1 ? "" : "s"}
+          </div>
+        )}
       </div>
     </div>
   );

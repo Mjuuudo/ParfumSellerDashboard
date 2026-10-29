@@ -1,5 +1,6 @@
 "use client";
 
+import { API_BASE_URL } from "@/app/_lib/api";
 import Link from "next/link";
 import { useState, type FormEvent, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
@@ -20,7 +21,7 @@ export default function CreateParfumPage() {
   useEffect(() => {
     const fetchBrands = async () => {
       try {
-      const data = await fetch("http://localhost:8000/api/brand", {
+      const data = await fetch(`${API_BASE_URL}/brand`, {
         method: "get",
         credentials: "include",
       });
@@ -64,7 +65,7 @@ export default function CreateParfumPage() {
       decant20Price: Number(formData.get("decant20Price")),
     };
 
-    const data = await fetch(`http://localhost:8000/api/parfum`, {
+    const data = await fetch(`${API_BASE_URL}/parfum`, {
       method: "post",
       credentials: "include",
       headers: {

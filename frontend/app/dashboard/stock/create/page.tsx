@@ -1,5 +1,6 @@
 "use client";
 
+import { API_BASE_URL } from "@/app/_lib/api";
 import Link from "next/link";
 import { useState, type FormEvent, useEffect } from "react";
 import { ArrowLeft, PackagePlus } from "lucide-react";
@@ -19,7 +20,7 @@ export default function RecordDeliveryPage() {
   useEffect( () => {
     const  fetchData = async () => {
       try {
-      const data = await fetch(`http://localhost:8000/api/parfum`, {
+      const data = await fetch(`${API_BASE_URL}/parfum`, {
         method: "get",
         credentials: "include"
       })
@@ -65,7 +66,7 @@ export default function RecordDeliveryPage() {
       purchaseCostPerBottle: Number(formData.get("purchaseCostPerBottle"))
     };
 
-    const data = await fetch(`http://localhost:8000/api/stock`, {
+    const data = await fetch(`${API_BASE_URL}/stock`, {
       method: "post",
       credentials: "include",
       headers: {

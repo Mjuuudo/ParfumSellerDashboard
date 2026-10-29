@@ -1,5 +1,6 @@
 "use client";
 
+import { API_BASE_URL } from "@/app/_lib/api";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -47,7 +48,7 @@ export default function DecantBottlesPage() {
   useEffect(() => {
   const fetchBottles = async () => {
     try {
-      const data = await fetch(`http://localhost:8000/api/bottle`, {
+      const data = await fetch(`${API_BASE_URL}/bottle`, {
         method: "get",
         credentials: "include",
        

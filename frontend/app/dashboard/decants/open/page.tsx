@@ -1,5 +1,6 @@
 "use client";
 
+import { API_BASE_URL } from "@/app/_lib/api";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -40,12 +41,12 @@ export default function OpenBottlePage() {
     const fetchData = async () => {
       try {
         // TODO(you): load the two lists, same pattern as your stock page:
-        //  1. GET http://localhost:8000/api/parfum  → setParfums(...)
-        //  2. GET http://localhost:8000/api/stock   → setBatches(...)
+        //  1. GET ${API_BASE_URL}/parfum  → setParfums(...)
+        //  2. GET ${API_BASE_URL}/stock   → setBatches(...)
         //  - 401          → router.push('/login')
         //  - not ok       → toast.error("...") + setLoadError(true)
         const get = (path: string) => 
-            fetch(`http://localhost:8000/api/${path}`,{ credentials: "include"});
+            fetch(`${API_BASE_URL}/${path}`,{ credentials: "include"});
 
         const [parfumRes, batchesRes] = await Promise.all([get('parfum'), get('stock')]);
 
@@ -97,7 +98,7 @@ export default function OpenBottlePage() {
     if (!batch) return;
     setSubmitting(true);
     try {
-      // TODO(you): POST http://localhost:8000/api/bottle with credentials: "include"
+      // TODO(you): POST ${API_BASE_URL}/bottle with credentials: "include"
       //   body: { stockBatchId: batch.id }
       //   (+ reserve: reserveForMe, once your BottleCreationDto accepts it: see section 3)
       //  - 401          → router.push('/login')
@@ -109,7 +110,7 @@ export default function OpenBottlePage() {
       const objectToSend = {
         stockBatchId: batch.id
       }
-      const data = await fetch(`http://localhost:8000/api/bottle`, {
+      const data = await fetch(`${API_BASE_URL}/bottle`, {
         method: "post",
         credentials: "include",
         headers: {

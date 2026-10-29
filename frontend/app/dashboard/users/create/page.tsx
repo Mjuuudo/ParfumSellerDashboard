@@ -1,5 +1,6 @@
 "use client";
 
+import { API_BASE_URL } from "@/app/_lib/api";
 import { FormEvent } from "react";
 import Link from "next/link";
 import {
@@ -25,7 +26,7 @@ export default function CreateUserPage() {
 
   useEffect(() => {
   const checkOwner = async () => {
-    const response = await fetch("http://localhost:8000/api/user/isOwner", {
+    const response = await fetch(`${API_BASE_URL}/user/isOwner`, {
       method: "get",
       credentials: "include",
     });
@@ -68,7 +69,7 @@ export default function CreateUserPage() {
     console.log(`Data Collected !`);
     // TODO: send `newUser` to the backend
 
-    const response = await fetch ( 'http://localhost:8000/api/user', {
+    const response = await fetch ( `${API_BASE_URL}/user`, {
       method: 'post',
       credentials: 'include',
       headers: {

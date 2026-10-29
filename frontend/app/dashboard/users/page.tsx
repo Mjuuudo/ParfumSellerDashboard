@@ -1,5 +1,6 @@
 "use client";
 
+import { API_BASE_URL } from "@/app/_lib/api";
 import Link from "next/link";
 import {
   Search,
@@ -44,7 +45,7 @@ export default function UsersPage() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/user/all", {
+        const response = await fetch(`${API_BASE_URL}/user/all`, {
           method: "GET",
           credentials: "include",
         });
@@ -110,9 +111,14 @@ export default function UsersPage() {
   // Called when the delete (trash) button of a row is clicked
   const handleDelete = async (user: User) => {
     // TODO: confirm, send DELETE request to the API, then remove the user from state
-    
-  
+
+
   };
+
+  // Summary figures, computed from the loaded users.
+  const ready = !loading && !error;
+  const ownerCount = users.filter((user) => user.Role === "OWNER").length;
+  const activeCount = users.filter((user) => user.isActive).length;
 
 
 return (
@@ -141,22 +147,23 @@ return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
           <p className="text-sm text-slate-400">Total Users</p>
-          <p className="mt-3 text-3xl font-bold">
-            {/* Render users.length here */}
+          <p className="mt-3 text-3xl font-bold tabular-nums">
+            {ready ? users.length : "—"}
           </p>
+          {ready && <p className="mt-1 text-xs text-slate-500">{activeCount} active</p>}
         </div>
 
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
           <p className="text-sm text-slate-400">Owners</p>
-          <p className="mt-3 text-3xl font-bold">
-            {/* Count users whose role is OWNER */}
+          <p className="mt-3 text-3xl font-bold tabular-nums text-amber-400">
+            {ready ? ownerCount : "—"}
           </p>
         </div>
 
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
           <p className="text-sm text-slate-400">Employees</p>
-          <p className="mt-3 text-3xl font-bold">
-            {/* Count users whose role is EMPLOYEE */}
+          <p className="mt-3 text-3xl font-bold tabular-nums text-sky-400">
+            {ready ? users.length - ownerCount : "—"}
           </p>
         </div>
       </div>
@@ -328,9 +335,11 @@ return (
           </table>
         </div>
 
-        <div className="border-t border-slate-800 px-6 py-4 text-xs text-slate-500">
-          {/* Display the actual number of fetched users here */}
-        </div>
+        {ready && users.length > 0 && (
+          <div className="border-t border-slate-800 px-6 py-4 text-xs text-slate-500">
+            {users.length} account{users.length === 1 ? "" : "s"} · {ownerCount} owner{ownerCount === 1 ? "" : "s"} · {users.length - ownerCount} employee{users.length - ownerCount === 1 ? "" : "s"}
+          </div>
+        )}
       </div>
     </div>
   );

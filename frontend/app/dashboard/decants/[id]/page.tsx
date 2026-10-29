@@ -1,5 +1,6 @@
 "use client";
 
+import { API_BASE_URL } from "@/app/_lib/api";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -45,14 +46,14 @@ export default function DecantBottleDetailsPage() {
   useEffect(() => {
     const fetchBottle = async () => {
       try {
-        // TODO(you): GET http://localhost:8000/api/bottle/${id} with credentials: "include"
+        // TODO(you): GET ${API_BASE_URL}/bottle/${id} with credentials: "include"
         //  - 401      → toast.info(`You Need To Authenticate Before Proceed !`, `Authentication Required`)
         //               + router.push('/login')
         //  - 404      → setNotFound(true)
         //  - not ok   → toast.error("...") + setLoadError(true)
         //  - ok       → const result: DecantBottle = await res.json();
         //               setBottle(result);   ← 👈 PUT THE DATA HERE
-        const data = await fetch(`http://localhost:8000/api/bottle/${id}`, {
+        const data = await fetch(`${API_BASE_URL}/bottle/${id}`, {
           method: "get",
           credentials: "include",
         });

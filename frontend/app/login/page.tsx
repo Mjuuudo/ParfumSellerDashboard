@@ -1,6 +1,7 @@
 
 "use client";
 
+import { API_BASE_URL } from "@/app/_lib/api";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "../_components/Toast";
@@ -19,7 +20,7 @@ export default function LoginPage() {
       password,
     };
 
-    const result = await fetch("http://localhost:8000/api/auth/login", {
+    const result = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "post",
         credentials: "include",
         headers: {

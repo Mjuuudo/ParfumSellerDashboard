@@ -1,5 +1,6 @@
 "use client";
 
+import { API_BASE_URL } from "@/app/_lib/api";
 import Link from "next/link";
 import { Plus, Search, Pencil, Power, Tags } from "lucide-react";
 import type { Brand } from "./_components/brand";
@@ -27,7 +28,7 @@ export default function BrandsPage() {
   useEffect(() => {
     const fetchItems = async ( ) => {
       try {
-      const data = await fetch("http://localhost:8000/api/brand", {
+      const data = await fetch(`${API_BASE_URL}/brand`, {
         method: "get",
         credentials: "include",
 
@@ -85,7 +86,7 @@ export default function BrandsPage() {
     }
 
 
-    const data = await fetch(`http://localhost:8000/api/brand/${brand.id}`, {
+    const data = await fetch(`${API_BASE_URL}/brand/${brand.id}`, {
       method: "PATCH",
       credentials: "include",
       headers: {
@@ -100,8 +101,15 @@ export default function BrandsPage() {
       return ;
     }
 
+    // Update that one brand in state, so its badge and the summary counts change without a reload.
+    setBrands((current) => current.map((item) => item.id === brand.id ? { ...item, isActive: !brand.isActive } : item));
+
     return ;
   };
+
+  // Summary figures, computed from the loaded brands.
+  const ready = !loading && !error;
+  const activeCount = brands.filter((brand) => brand.isActive).length;
 
 
   return (
@@ -128,22 +136,22 @@ export default function BrandsPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
           <p className="text-sm text-slate-400">Total Brands</p>
-          <p className="mt-3 text-3xl font-bold">
-            {/* TODO(you): brands.length */}
+          <p className="mt-3 text-3xl font-bold tabular-nums">
+            {ready ? brands.length : "—"}
           </p>
         </div>
 
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
           <p className="text-sm text-slate-400">Active</p>
-          <p className="mt-3 text-3xl font-bold text-emerald-400">
-            {/* TODO(you): count brands where isActive is true */}
+          <p className="mt-3 text-3xl font-bold tabular-nums text-emerald-400">
+            {ready ? activeCount : "—"}
           </p>
         </div>
 
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
           <p className="text-sm text-slate-400">Inactive</p>
-          <p className="mt-3 text-3xl font-bold text-red-400">
-            {/* TODO(you): count brands where isActive is false */}
+          <p className="mt-3 text-3xl font-bold tabular-nums text-red-400">
+            {ready ? brands.length - activeCount : "—"}
           </p>
         </div>
       </div>
@@ -231,9 +239,12 @@ export default function BrandsPage() {
           </>
         )}
 
-        <div className="border-t border-slate-800 px-6 py-4 text-xs text-slate-500">
-          {/* TODO(you): e.g. "Showing 4 of 12 brands" once search is wired up */}
-        </div>
+        {ready && brands.length > 0 && (
+          <div className="border-t border-slate-800 px-6 py-4 text-xs text-slate-500">
+            {/* TODO(you): once search is wired up, show "Showing X of Y brands" */}
+            {brands.length} brand{brands.length === 1 ? "" : "s"} · {activeCount} active
+          </div>
+        )}
       </div>
     </div>
   );

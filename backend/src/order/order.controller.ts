@@ -4,6 +4,7 @@ import { AuthGuard } from "../Auth/auth.guard.js";
 import { OrderCreationDto } from "./dto/createOrder.dto.js";
 import { DecantOperationQueryDto, OrderListQueryDto } from "./dto/listOrders.dto.js";
 import { InventoryService } from "./inventory.service.js";
+import { DashboardService } from "./dashboard.service.js";
 import { OrderService, type ActingUser } from "./order.service.js";
 
 
@@ -96,8 +97,18 @@ export class InventoryController {
 
 
     constructor (
-        private readonly inventoryService: InventoryService
+        private readonly inventoryService: InventoryService,
+        private readonly dashboardService: DashboardService,
     ) { }
+
+    // GET /api/dashboard/stats — the dashboard home figures, computed from live data:
+    // catalog counts, stock (sealed / reserved / available, decant ml), orders by status,
+    // revenue (confirmed + delivered), customers, perfumes out of stock and the 5 latest orders.
+    @Get('dashboard/stats')
+    async dashboardStats ( ) {
+
+        return await this.dashboardService.stats();
+    }
 
     // GET /api/inventory — batches (original / sealed / reserved / available bottles) and opened bottles
     // (initial / remaining / reserved / available ml) with their active reservations and latest operations.

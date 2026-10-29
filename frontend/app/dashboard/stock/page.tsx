@@ -1,5 +1,6 @@
 "use client";
 
+import { API_BASE_URL } from "@/app/_lib/api";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { PackagePlus, Search, Boxes, CalendarDays, UserRound, Pencil } from "lucide-react";
@@ -30,7 +31,7 @@ export default function StockPage() {
   useEffect( () => {
     const fetchData = async () => {
       try {
-      const data = await fetch(`http://localhost:8000/api/parfum`, {
+      const data = await fetch(`${API_BASE_URL}/parfum`, {
         method: "get",
         credentials: "include",
       })
@@ -47,7 +48,7 @@ export default function StockPage() {
       }
 
       setParfums(await data.json());
-      const batches = await fetch(`http://localhost:8000/api/stock`, {
+      const batches = await fetch(`${API_BASE_URL}/stock`, {
         method: "get",
         credentials: "include"
       });
@@ -77,6 +78,11 @@ export default function StockPage() {
     setReloadKey((key) => key + 1);
   };
 
+  // Summary figures, computed from the loaded batches.
+  const ready = !loading && !error;
+  const bottlesReceived = batches.reduce((sum, batch) => sum + batch.quantity, 0);
+  const bottlesSealed = batches.reduce((sum, batch) => sum + batch.unusedQuantity, 0);
+  const totalCost = batches.reduce((sum, batch) => sum + batch.quantity * batch.purchaseCostPerBottle, 0);
 
 
   return (
@@ -103,22 +109,23 @@ export default function StockPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
           <p className="text-sm text-slate-400">Deliveries</p>
-          <p className="mt-3 text-3xl font-bold">
-            {/* TODO(you): batches.length */}
+          <p className="mt-3 text-3xl font-bold tabular-nums">
+            {ready ? batches.length : "—"}
           </p>
         </div>
 
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
           <p className="text-sm text-slate-400">Bottles Received</p>
-          <p className="mt-3 text-3xl font-bold text-amber-400">
-            {/* TODO(you): sum of quantity over all batches (hint: reduce) */}
+          <p className="mt-3 text-3xl font-bold tabular-nums text-amber-400">
+            {ready ? bottlesReceived : "—"}
           </p>
+          {ready && <p className="mt-1 text-xs text-slate-500">{bottlesSealed} still sealed</p>}
         </div>
 
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
           <p className="text-sm text-slate-400">Total Purchase Cost</p>
-          <p className="mt-3 text-3xl font-bold">
-            {/* TODO(you): sum of quantity × purchaseCostPerBottle, shown with formatPrice */}
+          <p className="mt-3 text-3xl font-bold tabular-nums">
+            {ready ? formatPrice(totalCost) : "—"}
           </p>
         </div>
       </div>
@@ -260,9 +267,12 @@ export default function StockPage() {
           </>
         )}
 
-        <div className="border-t border-slate-800 px-6 py-4 text-xs text-slate-500">
-          {/* TODO(you): e.g. "Showing 4 of 12 deliveries" once search and the filter are wired up */}
-        </div>
+        {ready && batches.length > 0 && (
+          <div className="border-t border-slate-800 px-6 py-4 text-xs text-slate-500">
+            {/* TODO(you): once search and the filter are wired up, show "Showing X of Y deliveries" */}
+            {batches.length} deliver{batches.length === 1 ? "y" : "ies"} · {bottlesReceived} bottles received · {bottlesSealed} still sealed
+          </div>
+        )}
       </div>
     </div>
   );

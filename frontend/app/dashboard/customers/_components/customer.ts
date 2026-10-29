@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@/app/_lib/api";
 // Shape returned by GET /api/customer and GET /api/customer/:id
 // (backend/src/customer/customer.service.ts). Dates arrive as ISO strings.
 export type Customer = {
@@ -11,7 +12,7 @@ export type Customer = {
   updatedAt: string;
 };
 
-export const API_URL = "http://localhost:8000/api/customer";
+export const API_URL = `${API_BASE_URL}/customer`;
 
 // Two letters for the avatar: "Sara Benali" → "SB", "Amine" → "AM".
 export function customerInitials(fullName: string) {
